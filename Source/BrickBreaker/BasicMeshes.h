@@ -6,6 +6,6 @@ Mesh *CreateMeshWithVertices(const char *name, const std::vector<VertexFormat> &
 
 Mesh *CreateCircle(float radius);
 
-Mesh *CreateRect(std::string name, glm::vec3 leftBottomCorner, float height, float width, glm::vec3 color, bool fill);
+Mesh *CreateRect(std::string name, glm::vec3 center, float height, float width, glm::vec3 color, bool fill);
 
 Mesh *CreateHeart();

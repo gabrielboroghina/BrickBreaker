@@ -1,6 +1,5 @@
 #include "Paddle.h"
 
-#include <GL/glew.h>
 #include "Core/GPU/Mesh.h"
 #include "BasicMeshes.h"
 

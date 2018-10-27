@@ -13,5 +13,5 @@ public:
 	~Walls();
 
 private:
-	const glm::vec3 color = glm::vec3(186.0 / 255, 54.0 / 255, 11.0 / 255);
+	const glm::vec3 color = glm::vec3(0.6f, 0.08f, 0);
 };

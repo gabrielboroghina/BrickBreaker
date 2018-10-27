@@ -12,7 +12,7 @@ BrickBreaker::~BrickBreaker() {}
 
 void BrickBreaker::Init()
 {
-	glm::ivec2 resolution = window->GetResolution();
+	glm::vec2 resolution = window->GetResolution();
 	auto camera = GetSceneCamera();
 	camera->SetOrthographic(0, (float)resolution.x, 0, (float)resolution.y, 0.01f, 400);
 	camera->SetPosition(glm::vec3(0, 0, 50));
@@ -20,6 +20,7 @@ void BrickBreaker::Init()
 	camera->Update();
 	GetCameraInput()->SetActive(false);
 
+	// initialize objects
 	lives = 3;
 	for (int i = 0; i < lives; i++)
 		live[i] = CreateHeart();
@@ -27,6 +28,7 @@ void BrickBreaker::Init()
 	ball = new Object2D::Ball(resolution.x / 2.0f, 45.0f);
 	paddle = new Object2D::Paddle();
 	walls = new Walls(resolution.x, resolution.y);
+	bricks = new Bricks(10, 10, resolution.y, resolution.x);
 }
 
 void BrickBreaker::FrameStart()
@@ -38,6 +40,39 @@ void BrickBreaker::FrameStart()
 	glm::ivec2 resolution = window->GetResolution();
 	// sets the screen area where to draw
 	glViewport(0, 0, resolution.x, resolution.y);
+}
+
+void BrickBreaker::HandleBrickCollisions(float xBall, float yBall)
+{
+	float xMin, xMax, yMin, yMax;
+
+	for (int i = 0; i < bricks->numBrickLines; i++)
+		for (int j = 0; j < bricks->numBrickCols; j++)
+			if (bricks->bricks.count(i * bricks->numBrickCols + j)) {
+
+				// compute brick iterator in bricks vector
+				std::tie(xMin, xMax, yMin, yMax) = bricks->GetBrickBounds(i, j);
+
+				// vertical collision
+				if (xBall + collisionDist >= xMin && xBall - collisionDist <= xMax) {
+					if ((yBall >= yMax && yBall - yMax <= collisionDist && ball->vy < 0) || // collision from top
+						(yBall <= yMin && yMin - yBall <= collisionDist && ball->vy > 0)) {
+						// collision from bottom
+						ball->ReflectY();
+						bricks->bricks.erase(i * bricks->numBrickCols + j);
+					}
+				}
+
+				// horizontal collision
+				if (yBall + collisionDist >= yMin && yBall - collisionDist <= yMax) {
+					if ((xBall >= xMax && xBall - xMax <= collisionDist && ball->vx < 0) || // collision from left
+						(xBall <= xMin && xMin - xBall <= collisionDist && ball->vx > 0)) {
+						// collision from right
+						ball->ReflectX();
+						bricks->bricks.erase(i * bricks->numBrickCols + j);
+					}
+				}
+			}
 }
 
 void BrickBreaker::CheckCollisions()
@@ -71,6 +106,9 @@ void BrickBreaker::CheckCollisions()
 			(xRightBound - xBall <= collisionDist && ball->vx > 0)) &&
 		resolution.y - walls->verticalHeight <= yBall + collisionDist)
 		ball->ReflectX();
+
+	// collision with a brick
+	HandleBrickCollisions(xBall, yBall);
 }
 
 void BrickBreaker::ResetWithLiveLost()
@@ -86,9 +124,9 @@ void BrickBreaker::ResetWithLiveLost()
 void BrickBreaker::RenderLives()
 {
 	float livePos[3][2] = {
-		{10, 10},
-		{30, 10},
-		{50, 10}
+		{20, 15},
+		{40, 15},
+		{60, 15}
 	};
 
 	for (int i = 0; i < lives; i++)
@@ -97,9 +135,10 @@ void BrickBreaker::RenderLives()
 
 void BrickBreaker::Update(float deltaTimeSeconds)
 {
-	glm::ivec2 resolution = window->GetResolution();
+	glm::vec2 resolution = window->GetResolution();
 
-	CheckCollisions();
+	if (!ball->isAttached)
+		CheckCollisions();
 
 	// render walls
 	RenderMesh2D(walls->meshLeft, shaders["VertexColor"],
@@ -107,15 +146,20 @@ void BrickBreaker::Update(float deltaTimeSeconds)
 	RenderMesh2D(walls->meshRight, shaders["VertexColor"],
 	             Transform2D::Translate(resolution.x - walls->wallWidth / 2, resolution.y - walls->verticalHeight / 2));
 	RenderMesh2D(walls->meshTop, shaders["VertexColor"],
-	             Transform2D::Translate(resolution.x / 2.0, resolution.y - walls->wallWidth / 2));
+	             Transform2D::Translate(resolution.x / 2.0f, resolution.y - walls->wallWidth / 2));
 
-	paddle->CenterAtXPos(window->GetCursorPosition().x);
+	float cursorXPos = (float)window->GetCursorPosition().x;
+	paddle->CenterAtXPos(cursorXPos);
 	RenderMesh2D(paddle->mesh, shaders["VertexColor"], Transform2D::Translate(paddle->xCenter, paddle->yCenter));
 
-	ball->Update(deltaTimeSeconds, window->GetCursorPosition().x, 45.0f);
+	ball->Update(deltaTimeSeconds, cursorXPos, 45.0f);
 	RenderMesh2D(ball->mesh, shaders["VertexColor"], ball->transformMatrix);
 
 	RenderLives();
+
+	// render bricks
+	for (auto pp : bricks->bricks)
+		RenderMesh2D(pp.second, shaders["VertexColor"], bricks->translateMatrix);
 }
 
 void BrickBreaker::FrameEnd() {}

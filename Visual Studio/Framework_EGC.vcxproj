@@ -22,6 +22,7 @@
     <ClCompile Include="..\Source\BrickBreaker\Ball.cpp" />
     <ClCompile Include="..\Source\BrickBreaker\BasicMeshes.cpp" />
     <ClCompile Include="..\Source\BrickBreaker\BrickBreaker.cpp" />
+    <ClCompile Include="..\Source\BrickBreaker\Bricks.cpp" />
     <ClCompile Include="..\Source\BrickBreaker\Object.cpp" />
     <ClCompile Include="..\Source\BrickBreaker\Paddle.cpp" />
     <ClCompile Include="..\Source\BrickBreaker\Walls.cpp" />
@@ -45,6 +46,7 @@
     <ClInclude Include="..\Source\BrickBreaker\Ball.h" />
     <ClInclude Include="..\Source\BrickBreaker\BasicMeshes.h" />
     <ClInclude Include="..\Source\BrickBreaker\BrickBreaker.h" />
+    <ClInclude Include="..\Source\BrickBreaker\Bricks.h" />
     <ClInclude Include="..\Source\BrickBreaker\Object.h" />
     <ClInclude Include="..\Source\BrickBreaker\Paddle.h" />
     <ClInclude Include="..\Source\BrickBreaker\Transform2D.h" />

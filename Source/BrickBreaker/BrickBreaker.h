@@ -4,6 +4,7 @@
 #include "Ball.h"
 #include "Paddle.h"
 #include "Walls.h"
+#include "Bricks.h"
 
 class BrickBreaker : public SimpleScene
 {
@@ -18,6 +19,7 @@ private:
 	Object2D::Paddle *paddle;
 	Walls *walls;
 	Mesh *live[3];
+	Bricks *bricks;
 
 	int lives;
 	const float collisionDist = 8;
@@ -25,6 +27,8 @@ private:
 	void CheckCollisions();
 	void ResetWithLiveLost();
 	void RenderLives();
+	void RenderBricks();
+	void HandleBrickCollisions(float xBall, float yBall);
 
 	void FrameStart() override;
 	void Update(float deltaTimeSeconds) override;
