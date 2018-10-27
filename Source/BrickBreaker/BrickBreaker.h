@@ -17,12 +17,14 @@ private:
 	Object2D::Ball *ball;
 	Object2D::Paddle *paddle;
 	Walls *walls;
+	Mesh *live[3];
 
 	int lives;
 	const float collisionDist = 8;
 
 	void CheckCollisions();
 	void ResetWithLiveLost();
+	void RenderLives();
 
 	void FrameStart() override;
 	void Update(float deltaTimeSeconds) override;

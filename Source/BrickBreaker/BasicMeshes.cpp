@@ -64,7 +64,6 @@ Mesh *CreateMeshWithVertices(const char *name, const std::vector<VertexFormat> &
 	return mesh;
 }
 
-
 Mesh *CreateCircle(float radius)
 {
 	// Create circle
@@ -81,6 +80,36 @@ Mesh *CreateCircle(float radius)
 		indices.push_back(0);
 		indices.push_back(u);
 		indices.push_back(u + 1);
+	}
+
+	// Create a new mesh from the buffer data
+	return CreateMeshWithVertices("circle", vertices, indices);
+}
+
+Mesh *CreateHeart()
+{
+	std::vector<VertexFormat> vertices;
+	glm::vec3 magenta = glm::vec3(0.93, 0.05, 0.33);
+	glm::vec3 gray = glm::vec3(0.64f, 0.23f, 0.36f); // gray
+	float radius = 3;
+
+	// bottom triangle
+	vertices.push_back(VertexFormat(glm::vec3(0, 0, 0), gray));
+	vertices.push_back(VertexFormat(glm::vec3(6, 9, 0), magenta));
+	vertices.push_back(VertexFormat(glm::vec3(-6, 9, 0), magenta));
+	std::vector<unsigned short> indices = {0, 1, 2};
+
+	for (int x = -3; x <= 3; x += 6) {
+		int centerIndex = vertices.size();
+		vertices.push_back(VertexFormat(glm::vec3(x, 9, 0), magenta)); // center
+		vertices.push_back(VertexFormat(glm::vec3(x + radius, 9, 0), magenta));
+
+		for (int u = 1; u <= 180; u++) {
+			vertices.push_back(VertexFormat(glm::vec3(x + radius * cos(u), 9 + radius * sin(u), 0), magenta));
+			indices.push_back(centerIndex);
+			indices.push_back(centerIndex + u);
+			indices.push_back(centerIndex + u + 1);
+		}
 	}
 
 	// Create a new mesh from the buffer data

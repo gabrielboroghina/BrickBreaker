@@ -2,6 +2,7 @@
 
 #include <Core/Engine.h>
 #include "Transform2D.h"
+#include "BasicMeshes.h"
 
 using namespace std;
 
@@ -20,6 +21,9 @@ void BrickBreaker::Init()
 	GetCameraInput()->SetActive(false);
 
 	lives = 3;
+	for (int i = 0; i < lives; i++)
+		live[i] = CreateHeart();
+
 	ball = new Object2D::Ball(resolution.x / 2.0f, 45.0f);
 	paddle = new Object2D::Paddle();
 	walls = new Walls(resolution.x, resolution.y);
@@ -40,25 +44,32 @@ void BrickBreaker::CheckCollisions()
 {
 	float xBall = ball->transformMatrix[2][0];
 	float yBall = ball->transformMatrix[2][1];
+	glm::ivec2 resolution = window->GetResolution();
 
 	// check if ball exited the game area
-	if (xBall < 0 || yBall < 0 || xBall > window->GetResolution().x || yBall > window->GetResolution().y)
+	if (xBall < 0 || yBall < 0 || xBall > resolution.x || yBall > resolution.y)
 		ResetWithLiveLost();
 
 	// collision with the paddle
 	if (xBall >= paddle->xCenter - paddle->length / 2 && xBall <= paddle->xCenter + paddle->length / 2 &&
-		yBall - paddle->yTop <= collisionDist && ball->vy < 0)
+		yBall - paddle->yTop <= collisionDist && ball->vy <= 0)
 		ball->ReflectAngled((xBall - paddle->xCenter) / (paddle->length / 2));
 
 	// collision with a wall
-	float yTopBound = window->GetResolution().y - walls->wallWidth;
+	float yTopBound = resolution.y - walls->wallWidth;
 	float xLeftBound = walls->wallWidth;
-	float xRightBound = window->GetResolution().x - walls->wallWidth;
+	float xRightBound = resolution.x - walls->wallWidth;
+
+	if ((xBall - xLeftBound <= collisionDist || xRightBound - xBall <= collisionDist) && ball->vy > 0 &&
+		resolution.y - walls->verticalHeight - yBall <= collisionDist && yBall < resolution.y - walls->verticalHeight)
+		ball->ReflectY();
 
 	if (yTopBound - yBall <= collisionDist && ball->vy > 0)
 		ball->ReflectY();
-	else if ((xBall - xLeftBound <= collisionDist && ball->vx < 0) ||
-		(xRightBound - xBall <= collisionDist && ball->vx > 0))
+
+	if (((xBall - xLeftBound <= collisionDist && ball->vx < 0) ||
+			(xRightBound - xBall <= collisionDist && ball->vx > 0)) &&
+		resolution.y - walls->verticalHeight <= yBall + collisionDist)
 		ball->ReflectX();
 }
 
@@ -66,6 +77,22 @@ void BrickBreaker::ResetWithLiveLost()
 {
 	lives--;
 	ball->Attach();
+
+	if (!lives) {
+		// GAME OVER
+	}
+}
+
+void BrickBreaker::RenderLives()
+{
+	float livePos[3][2] = {
+		{10, 10},
+		{30, 10},
+		{50, 10}
+	};
+
+	for (int i = 0; i < lives; i++)
+		RenderMesh2D(live[i], shaders["VertexColor"], Transform2D::Translate(livePos[i][0], livePos[i][1]));
 }
 
 void BrickBreaker::Update(float deltaTimeSeconds)
@@ -87,6 +114,8 @@ void BrickBreaker::Update(float deltaTimeSeconds)
 
 	ball->Update(deltaTimeSeconds, window->GetCursorPosition().x, 45.0f);
 	RenderMesh2D(ball->mesh, shaders["VertexColor"], ball->transformMatrix);
+
+	RenderLives();
 }
 
 void BrickBreaker::FrameEnd() {}
