@@ -88,6 +88,12 @@
     <ClCompile Include="..\Source\BrickBreaker\Bricks.cpp">
       <Filter>BrickBreaker</Filter>
     </ClCompile>
+    <ClCompile Include="..\Source\BrickBreaker\PowerupsManager.cpp">
+      <Filter>BrickBreaker</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\BrickBreaker\Powerup.cpp">
+      <Filter>BrickBreaker</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Source\Core\World.h">
@@ -166,6 +172,12 @@
       <Filter>BrickBreaker</Filter>
     </ClInclude>
     <ClInclude Include="..\Source\BrickBreaker\Bricks.h">
+      <Filter>BrickBreaker</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\BrickBreaker\PowerupsManager.h">
+      <Filter>BrickBreaker</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\BrickBreaker\Powerup.h">
       <Filter>BrickBreaker</Filter>
     </ClInclude>
   </ItemGroup>

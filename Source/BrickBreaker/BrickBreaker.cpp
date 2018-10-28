@@ -54,13 +54,14 @@ void BrickBreaker::HandleBrickCollisions(float xBall, float yBall)
 				// compute brick iterator in bricks vector
 				std::tie(xMin, xMax, yMin, yMax) = bricks->GetBrickBounds(i, j);
 
+				bool collisionDetected = false;
 				// vertical collision
 				if (xBall + collisionDist >= xMin && xBall - collisionDist <= xMax) {
 					if ((yBall >= yMax && yBall - yMax <= collisionDist && ball->vy < 0) || // collision from top
 						(yBall <= yMin && yMin - yBall <= collisionDist && ball->vy > 0)) {
 						// collision from bottom
 						ball->ReflectY();
-						bricks->Blast(brickIndex);
+						collisionDetected = true;
 					}
 				}
 
@@ -70,8 +71,13 @@ void BrickBreaker::HandleBrickCollisions(float xBall, float yBall)
 						(xBall <= xMin && xMin - xBall <= collisionDist && ball->vx > 0)) {
 						// collision from right
 						ball->ReflectX();
-						bricks->Blast(brickIndex);
+						collisionDetected = true;
 					}
+				}
+
+				if (collisionDetected) {
+					bricks->Blast(brickIndex);
+					powerupsManager.MaySpawn((xMin + xMax) / 2, (yMin + yMax) / 2);
 				}
 			}
 		}
@@ -166,6 +172,11 @@ void BrickBreaker::Update(float deltaTimeSeconds)
 	bricks->Update(deltaTimeSeconds);
 	for (auto &pp : bricks->brick)
 		RenderMesh2D(pp.second, shaders["VertexColor"], bricks->GetTransformMatrix(pp.first));
+
+	// render powerups
+	powerupsManager.Update(deltaTimeSeconds);
+	for (auto &powerup : powerupsManager.GetPowerups())
+		RenderMesh2D(powerup->mesh, shaders["VertexColor"], powerup->GetTransformMatrix());
 }
 
 void BrickBreaker::FrameEnd() {}
@@ -185,7 +196,7 @@ void BrickBreaker::OnMouseBtnPress(int mouseX, int mouseY, int button, int mods)
 {
 	// add mouse button press event
 	switch (button) {
-		case GLFW_MOUSE_BUTTON_2:
+		case GLFW_MOUSE_BUTTON_2: // left button
 			if (ball->isAttached) ball->Detach();
 			break;
 	}

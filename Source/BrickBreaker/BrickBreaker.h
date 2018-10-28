@@ -5,6 +5,7 @@
 #include "Paddle.h"
 #include "Walls.h"
 #include "Bricks.h"
+#include "PowerupsManager.h"
 
 class BrickBreaker : public SimpleScene
 {
@@ -21,6 +22,7 @@ private:
 	Walls *walls;
 	Mesh *live[3];
 	Bricks *bricks;
+	PowerupsManager powerupsManager;
 
 	int lives;
 	const float collisionDist = 8;
