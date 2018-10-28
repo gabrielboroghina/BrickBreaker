@@ -9,12 +9,10 @@ Ball::Ball(float initialX, float initialY) : radius(9), isAttached(true)
 {
 	mesh = CreateCircle(radius);
 	transformMatrix = Transform2D::Translate(initialX, initialY);
+	scaleMatrix = glm::mat3(1);
 }
 
-Ball::~Ball()
-{
-	delete mesh;
-}
+Ball::~Ball() { delete mesh; }
 
 void Ball::Attach() { isAttached = true; }
 
@@ -22,15 +20,21 @@ void Ball::Detach()
 {
 	isAttached = false;
 
-	// set initial speed vector
+	// set initial velocity vector
 	vx = 0;
-	vy = speed;
+	vy = velocity;
+}
+
+void Ball::scale(float scaleFactor)
+{
+	scaleMatrix *= Transform2D::Scale(scaleFactor, scaleFactor);
+	transformMatrix *= scaleMatrix;
 }
 
 void Ball::Update(float deltaTime, float xCursor, float yPos)
 {
 	if (isAttached)
-		transformMatrix = Transform2D::Translate(xCursor, yPos);
+		transformMatrix = Transform2D::Translate(xCursor, yPos) * scaleMatrix;
 	else
 		transformMatrix = Transform2D::Translate(deltaTime * vx, deltaTime * vy) * transformMatrix;
 }
@@ -41,7 +45,7 @@ void Ball::ReflectY() { vy = -vy; }
 
 void Ball::ReflectAngled(float cos)
 {
-	vx = speed * cos;
-	vy = speed * sqrt(1 - cos * cos); // speed * sin
+	vx = velocity * cos;
+	vy = velocity * sqrt(1 - cos * cos); // velocity * sin
 }
 }

@@ -6,7 +6,7 @@ class Walls
 {
 public:
 	const float wallWidth = 15;
-	float verticalHeight;
+	float verticalHeight, topWallWidth;
 	Mesh *meshLeft, *meshRight, *meshTop;
 
 	Walls(float initialX, float initialY);

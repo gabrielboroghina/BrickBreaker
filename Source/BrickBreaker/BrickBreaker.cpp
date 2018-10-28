@@ -6,7 +6,7 @@
 
 using namespace std;
 
-BrickBreaker::BrickBreaker() {}
+BrickBreaker::BrickBreaker() : isGameOver(false), windowWidthScale(1), windowHeightScale(1), lives(3) {}
 
 BrickBreaker::~BrickBreaker() {}
 
@@ -19,16 +19,16 @@ void BrickBreaker::Init()
 	camera->SetRotation(glm::vec3(0, 0, 0));
 	camera->Update();
 	GetCameraInput()->SetActive(false);
+	viewportSize = resolution;
 
 	// initialize objects
-	lives = 3;
 	for (int i = 0; i < lives; i++)
 		live[i] = CreateHeart();
 
-	ball = new Object2D::Ball(resolution.x / 2.0f, 45.0f);
+	ball = new Object2D::Ball(viewportSize.x / 2.0f, 45.0f);
 	paddle = new Object2D::Paddle();
-	walls = new Walls(resolution.x, resolution.y);
-	bricks = new Bricks(10, 10, resolution.y, resolution.x);
+	walls = new Walls(viewportSize.x, viewportSize.y);
+	bricks = new Bricks(10, 10, viewportSize.y, viewportSize.x);
 }
 
 void BrickBreaker::FrameStart()
@@ -48,7 +48,7 @@ void BrickBreaker::HandleBrickCollisions(float xBall, float yBall)
 
 	for (int i = 0; i < bricks->numBrickLines; i++)
 		for (int j = 0; j < bricks->numBrickCols; j++)
-			if (bricks->bricks.count(i * bricks->numBrickCols + j)) {
+			if (bricks->brick.count(i * bricks->numBrickCols + j)) {
 
 				// compute brick iterator in bricks vector
 				std::tie(xMin, xMax, yMin, yMax) = bricks->GetBrickBounds(i, j);
@@ -59,7 +59,7 @@ void BrickBreaker::HandleBrickCollisions(float xBall, float yBall)
 						(yBall <= yMin && yMin - yBall <= collisionDist && ball->vy > 0)) {
 						// collision from bottom
 						ball->ReflectY();
-						bricks->bricks.erase(i * bricks->numBrickCols + j);
+						bricks->Blast(i * bricks->numBrickCols + j);
 					}
 				}
 
@@ -69,7 +69,7 @@ void BrickBreaker::HandleBrickCollisions(float xBall, float yBall)
 						(xBall <= xMin && xMin - xBall <= collisionDist && ball->vx > 0)) {
 						// collision from right
 						ball->ReflectX();
-						bricks->bricks.erase(i * bricks->numBrickCols + j);
+						bricks->Blast(i * bricks->numBrickCols + j);
 					}
 				}
 			}
@@ -79,10 +79,9 @@ void BrickBreaker::CheckCollisions()
 {
 	float xBall = ball->transformMatrix[2][0];
 	float yBall = ball->transformMatrix[2][1];
-	glm::ivec2 resolution = window->GetResolution();
 
 	// check if ball exited the game area
-	if (xBall < 0 || yBall < 0 || xBall > resolution.x || yBall > resolution.y)
+	if (xBall < 0 || yBall < 0 || xBall > viewportSize.x || yBall > viewportSize.y)
 		ResetWithLiveLost();
 
 	// collision with the paddle
@@ -91,12 +90,13 @@ void BrickBreaker::CheckCollisions()
 		ball->ReflectAngled((xBall - paddle->xCenter) / (paddle->length / 2));
 
 	// collision with a wall
-	float yTopBound = resolution.y - walls->wallWidth;
+	float yTopBound = viewportSize.y - walls->wallWidth;
 	float xLeftBound = walls->wallWidth;
-	float xRightBound = resolution.x - walls->wallWidth;
+	float xRightBound = viewportSize.x - walls->wallWidth;
 
 	if ((xBall - xLeftBound <= collisionDist || xRightBound - xBall <= collisionDist) && ball->vy > 0 &&
-		resolution.y - walls->verticalHeight - yBall <= collisionDist && yBall < resolution.y - walls->verticalHeight)
+		viewportSize.y - walls->verticalHeight - yBall <= collisionDist && yBall < viewportSize.y - walls->
+		verticalHeight)
 		ball->ReflectY();
 
 	if (yTopBound - yBall <= collisionDist && ball->vy > 0)
@@ -104,7 +104,7 @@ void BrickBreaker::CheckCollisions()
 
 	if (((xBall - xLeftBound <= collisionDist && ball->vx < 0) ||
 			(xRightBound - xBall <= collisionDist && ball->vx > 0)) &&
-		resolution.y - walls->verticalHeight <= yBall + collisionDist)
+		viewportSize.y - walls->verticalHeight <= yBall + collisionDist)
 		ball->ReflectX();
 
 	// collision with a brick
@@ -118,6 +118,8 @@ void BrickBreaker::ResetWithLiveLost()
 
 	if (!lives) {
 		// GAME OVER
+		ball->scale(0);
+		isGameOver = true;
 	}
 }
 
@@ -135,20 +137,21 @@ void BrickBreaker::RenderLives()
 
 void BrickBreaker::Update(float deltaTimeSeconds)
 {
-	glm::vec2 resolution = window->GetResolution();
+	if (isGameOver) return;
 
 	if (!ball->isAttached)
 		CheckCollisions();
 
 	// render walls
 	RenderMesh2D(walls->meshLeft, shaders["VertexColor"],
-	             Transform2D::Translate(walls->wallWidth / 2, resolution.y - walls->verticalHeight / 2));
+	             Transform2D::Translate(walls->wallWidth / 2, viewportSize.y - walls->verticalHeight / 2));
 	RenderMesh2D(walls->meshRight, shaders["VertexColor"],
-	             Transform2D::Translate(resolution.x - walls->wallWidth / 2, resolution.y - walls->verticalHeight / 2));
+	             Transform2D::Translate(walls->topWallWidth - walls->wallWidth / 2,
+	                                    viewportSize.y - walls->verticalHeight / 2));
 	RenderMesh2D(walls->meshTop, shaders["VertexColor"],
-	             Transform2D::Translate(resolution.x / 2.0f, resolution.y - walls->wallWidth / 2));
+	             Transform2D::Translate(walls->topWallWidth / 2.0f, viewportSize.y - walls->wallWidth / 2));
 
-	float cursorXPos = (float)window->GetCursorPosition().x;
+	float cursorXPos = (float)window->GetCursorPosition().x / windowWidthScale;
 	paddle->CenterAtXPos(cursorXPos);
 	RenderMesh2D(paddle->mesh, shaders["VertexColor"], Transform2D::Translate(paddle->xCenter, paddle->yCenter));
 
@@ -158,8 +161,9 @@ void BrickBreaker::Update(float deltaTimeSeconds)
 	RenderLives();
 
 	// render bricks
-	for (auto pp : bricks->bricks)
-		RenderMesh2D(pp.second, shaders["VertexColor"], bricks->translateMatrix);
+	bricks->Update(deltaTimeSeconds);
+	for (auto &pp : bricks->brick)
+		RenderMesh2D(pp.second, shaders["VertexColor"], bricks->GetTransformMatrix(pp.first));
 }
 
 void BrickBreaker::FrameEnd() {}
@@ -192,4 +196,10 @@ void BrickBreaker::OnMouseBtnRelease(int mouseX, int mouseY, int button, int mod
 
 void BrickBreaker::OnMouseScroll(int mouseX, int mouseY, int offsetX, int offsetY) {}
 
-void BrickBreaker::OnWindowResize(int width, int height) {}
+void BrickBreaker::OnWindowResize(int width, int height)
+{
+	// change walls dimensions
+	windowWidthScale = width / viewportSize.x;
+	windowHeightScale = height / viewportSize.y;
+	walls->verticalHeight = height * 0.9f;
+}

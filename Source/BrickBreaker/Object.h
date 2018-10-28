@@ -4,7 +4,7 @@
 class Object
 {
 public:
-	glm::mat3 transformMatrix;
+	glm::mat3 transformMatrix, scaleMatrix;
 
 	Object();
 	virtual ~Object();

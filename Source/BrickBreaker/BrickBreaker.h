@@ -15,6 +15,7 @@ public:
 	void Init() override;
 
 private:
+	bool isGameOver;
 	Object2D::Ball *ball;
 	Object2D::Paddle *paddle;
 	Walls *walls;
@@ -23,6 +24,8 @@ private:
 
 	int lives;
 	const float collisionDist = 8;
+	float windowWidthScale, windowHeightScale;
+	glm::vec2 viewportSize;
 
 	void CheckCollisions();
 	void ResetWithLiveLost();
