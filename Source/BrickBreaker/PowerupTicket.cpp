@@ -1,4 +1,4 @@
-#include "Powerup.h"
+#include "PowerupTicket.h"
 
 #include "BasicMeshes.h"
 #include "Transform2D.h"
@@ -9,7 +9,7 @@ std::unordered_map<PowerupType, glm::vec3> colorByType = {
 	{PowerupType::BOTTOM_WALL, glm::vec3(1, 1, 0)}
 };
 
-Powerup::Powerup(PowerupType type, float x, float y)
+PowerupTicket::PowerupTicket(PowerupType type, float x, float y) : type(type)
 {
 	translateMatrix = Transform2D::Translate(x, y);
 	rotateMatrix = glm::mat3(1);
@@ -18,12 +18,12 @@ Powerup::Powerup(PowerupType type, float x, float y)
 	velocity = (float)(rand() % 3 + 1) * 100;
 }
 
-Powerup::~Powerup()
+PowerupTicket::~PowerupTicket()
 {
 	delete mesh;
 }
 
-void Powerup::Update(float deltaTime)
+void PowerupTicket::Update(float deltaTime)
 {
 	translateMatrix *= Transform2D::Translate(0, -velocity * deltaTime);
 	rotateMatrix *= Transform2D::Rotate(deltaTime * 2);
@@ -34,12 +34,12 @@ void Powerup::Update(float deltaTime)
 	}
 }
 
-glm::mat3x3 Powerup::GetTransformMatrix()
+glm::mat3x3 PowerupTicket::GetTransformMatrix() const
 {
 	return translateMatrix * rotateMatrix;
 }
 
-std::vector<glm::vec3> Powerup::GetCorners()
+std::vector<glm::vec3> PowerupTicket::GetCorners() const
 {
 	glm::mat3x3 transformMat = translateMatrix * rotateMatrix;
 	std::vector<glm::vec3> corners = {

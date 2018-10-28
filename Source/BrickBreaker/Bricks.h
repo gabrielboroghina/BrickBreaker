@@ -21,6 +21,6 @@ public:
 	std::tuple<float, float, float, float> GetBrickBounds(int i, int j);
 
 private:
-	float fSpaceBrick;
+	float fSpaceBrick; // the proportion space_size / brick_size
 	std::unordered_map<int, float> scaleFactor;
 };

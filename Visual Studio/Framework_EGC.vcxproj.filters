@@ -88,10 +88,13 @@
     <ClCompile Include="..\Source\BrickBreaker\Bricks.cpp">
       <Filter>BrickBreaker</Filter>
     </ClCompile>
-    <ClCompile Include="..\Source\BrickBreaker\PowerupsManager.cpp">
+    <ClCompile Include="..\Source\BrickBreaker\PowerupTicket.cpp">
       <Filter>BrickBreaker</Filter>
     </ClCompile>
-    <ClCompile Include="..\Source\BrickBreaker\Powerup.cpp">
+    <ClCompile Include="..\Source\BrickBreaker\PowerupManager.cpp">
+      <Filter>BrickBreaker</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\BrickBreaker\Powerups.cpp">
       <Filter>BrickBreaker</Filter>
     </ClCompile>
   </ItemGroup>
@@ -174,10 +177,13 @@
     <ClInclude Include="..\Source\BrickBreaker\Bricks.h">
       <Filter>BrickBreaker</Filter>
     </ClInclude>
-    <ClInclude Include="..\Source\BrickBreaker\PowerupsManager.h">
+    <ClInclude Include="..\Source\BrickBreaker\PowerupTicket.h">
       <Filter>BrickBreaker</Filter>
     </ClInclude>
-    <ClInclude Include="..\Source\BrickBreaker\Powerup.h">
+    <ClInclude Include="..\Source\BrickBreaker\PowerupManager.h">
+      <Filter>BrickBreaker</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\BrickBreaker\Powerups.h">
       <Filter>BrickBreaker</Filter>
     </ClInclude>
   </ItemGroup>

@@ -30,7 +30,8 @@ void BrickBreaker::Init()
 	walls = new Walls(viewportSize.x, viewportSize.y);
 	bricks = new Bricks(10, 10, viewportSize.y, viewportSize.x);
 
-	powerupsManager = new PowerupsManager(viewportSize.x);
+	powerupsManager = PowerupManager::GetInstance();
+	PowerupManager::SetViewportSize(viewportSize);
 }
 
 void BrickBreaker::FrameStart()
@@ -90,7 +91,8 @@ void BrickBreaker::HandlePowerupsCollisions(float xBall, float yBall)
 	float xMin = paddle->xCenter - paddle->length;
 	float xMax = paddle->xCenter + paddle->length;
 
-	for (auto &powerup : powerupsManager->GetPowerups()) {
+	// check powerup tickets collisions
+	for (auto &powerup : powerupsManager->GetTickets()) {
 		for (auto corner : powerup->GetCorners())
 			if (corner.x >= xMin && corner.x <= xMax &&
 				corner.y <= paddle->yTop) {
@@ -103,7 +105,7 @@ void BrickBreaker::HandlePowerupsCollisions(float xBall, float yBall)
 	// check active powerups
 
 	// bottom wall
-	if (powerupsManager->isPowerupActive(BOTTOM_WALL) && yBall - powerupsManager->bottomWallYTop <= collisionDist)
+	if (powerupsManager->IsPowerupActive(BOTTOM_WALL) && yBall - BottomWall::yTop <= collisionDist)
 		ball->ReflectY();
 }
 
@@ -142,7 +144,7 @@ void BrickBreaker::CheckCollisions()
 	// collision with a brick
 	HandleBrickCollisions(xBall, yBall);
 
-	// collision between a powerup and the paddle or between the ball and a powerup mesh
+	// collision between a powerup ticket and the paddle or between the ball and a powerup ticket
 	HandlePowerupsCollisions(xBall, yBall);
 }
 
@@ -201,12 +203,12 @@ void BrickBreaker::Update(float deltaTimeSeconds)
 		RenderMesh2D(pp.second, shaders["VertexColor"], bricks->GetTransformMatrix(pp.first));
 
 	// render powerups
-	powerupsManager->Update(deltaTimeSeconds);
-	for (auto &powerup : powerupsManager->GetPowerups())
-		RenderMesh2D(powerup->mesh, shaders["VertexColor"], powerup->GetTransformMatrix());
-	for (auto &activePowerup : powerupsManager->activePowerupsMeshes)
-		if (activePowerup.second)
-			RenderMesh2D(activePowerup.first, shaders["VertexColor"], glm::mat3(1));
+	powerupsManager->UpdatePowerups(deltaTimeSeconds);
+	for (auto &powerupTicket : powerupsManager->GetTickets())
+		RenderMesh2D(powerupTicket->mesh, shaders["VertexColor"], powerupTicket->GetTransformMatrix());
+
+	for (auto &activePowerup : PowerupManager::activePowerupsMeshes)
+		RenderMesh2D(activePowerup.first, shaders["VertexColor"], activePowerup.second);
 }
 
 void BrickBreaker::FrameEnd() {}
@@ -217,10 +219,7 @@ void BrickBreaker::OnKeyPress(int key, int mods) { }
 
 void BrickBreaker::OnKeyRelease(int key, int mods) {}
 
-void BrickBreaker::OnMouseMove(int mouseX, int mouseY, int deltaX, int deltaY)
-{
-	// add mouse move event
-}
+void BrickBreaker::OnMouseMove(int mouseX, int mouseY, int deltaX, int deltaY) {}
 
 void BrickBreaker::OnMouseBtnPress(int mouseX, int mouseY, int button, int mods)
 {
@@ -228,14 +227,17 @@ void BrickBreaker::OnMouseBtnPress(int mouseX, int mouseY, int button, int mods)
 	switch (button) {
 		case GLFW_MOUSE_BUTTON_2: // left button
 			if (ball->isAttached) ball->Detach();
+
+			if (isGameOver) {
+				// reset game
+				isGameOver = false;
+				lives = 3;
+			}
 			break;
 	}
 }
 
-void BrickBreaker::OnMouseBtnRelease(int mouseX, int mouseY, int button, int mods)
-{
-	// add mouse button release event
-}
+void BrickBreaker::OnMouseBtnRelease(int mouseX, int mouseY, int button, int mods) {}
 
 void BrickBreaker::OnMouseScroll(int mouseX, int mouseY, int offsetX, int offsetY) {}
 

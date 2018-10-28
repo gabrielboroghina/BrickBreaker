@@ -25,8 +25,9 @@
     <ClCompile Include="..\Source\BrickBreaker\Bricks.cpp" />
     <ClCompile Include="..\Source\BrickBreaker\Object.cpp" />
     <ClCompile Include="..\Source\BrickBreaker\Paddle.cpp" />
-    <ClCompile Include="..\Source\BrickBreaker\Powerup.cpp" />
-    <ClCompile Include="..\Source\BrickBreaker\PowerupsManager.cpp" />
+    <ClCompile Include="..\Source\BrickBreaker\Powerups.cpp" />
+    <ClCompile Include="..\Source\BrickBreaker\PowerupTicket.cpp" />
+    <ClCompile Include="..\Source\BrickBreaker\PowerupManager.cpp" />
     <ClCompile Include="..\Source\BrickBreaker\Walls.cpp" />
     <ClCompile Include="..\Source\Component\CameraInput.cpp" />
     <ClCompile Include="..\Source\Component\SceneInput.cpp" />
@@ -51,8 +52,9 @@
     <ClInclude Include="..\Source\BrickBreaker\Bricks.h" />
     <ClInclude Include="..\Source\BrickBreaker\Object.h" />
     <ClInclude Include="..\Source\BrickBreaker\Paddle.h" />
-    <ClInclude Include="..\Source\BrickBreaker\Powerup.h" />
-    <ClInclude Include="..\Source\BrickBreaker\PowerupsManager.h" />
+    <ClInclude Include="..\Source\BrickBreaker\Powerups.h" />
+    <ClInclude Include="..\Source\BrickBreaker\PowerupTicket.h" />
+    <ClInclude Include="..\Source\BrickBreaker\PowerupManager.h" />
     <ClInclude Include="..\Source\BrickBreaker\Transform2D.h" />
     <ClInclude Include="..\Source\BrickBreaker\Walls.h" />
     <ClInclude Include="..\Source\Component\CameraInput.h" />

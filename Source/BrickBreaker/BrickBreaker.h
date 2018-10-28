@@ -5,7 +5,7 @@
 #include "Paddle.h"
 #include "Walls.h"
 #include "Bricks.h"
-#include "PowerupsManager.h"
+#include "PowerupManager.h"
 
 class BrickBreaker : public SimpleScene
 {
@@ -16,14 +16,14 @@ public:
 	void Init() override;
 
 private:
-	bool isGameOver;
 	Object2D::Ball *ball;
 	Object2D::Paddle *paddle;
 	Walls *walls;
 	Mesh *live[3];
 	Bricks *bricks;
-	PowerupsManager *powerupsManager;
+	PowerupManager *powerupsManager;
 
+	bool isGameOver;
 	int lives;
 	const float collisionDist = 8;
 	float windowWidthScale, windowHeightScale;

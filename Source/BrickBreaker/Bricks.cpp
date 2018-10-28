@@ -4,22 +4,20 @@
 #include "Transform2D.h"
 #include <tuple>
 
-Bricks::Bricks(int numBrickLines, int numBrickCols, float winHeight, float winWidth) : numBrickLines(numBrickLines),
-                                                                                       numBrickCols(numBrickCols)
+Bricks::Bricks(int numBrickLines, int numBrickCols, float winHeight, float winWidth) :
+	numBrickLines(numBrickLines), numBrickCols(numBrickCols), fSpaceBrick(0.35)
 {
-	int i, j;
 	const float fXSpace = 0.6f, fYSpace = 0.4f;
 
 	glm::vec3 color = glm::vec3(0.7f, 0.26f, 0.1f);
 	float height = fYSpace * winHeight;
 	float width = fXSpace * winWidth;
 
-	fSpaceBrick = 0.3;
 	brickHeight = height / ((fSpaceBrick + 1) * numBrickLines - fSpaceBrick);
 	brickWidth = width / ((fSpaceBrick + 1) * numBrickCols - fSpaceBrick);
 
-	for (i = 0; i < numBrickLines; i++)
-		for (j = 0; j < numBrickCols; j++) {
+	for (int i = 0; i < numBrickLines; i++)
+		for (int j = 0; j < numBrickCols; j++) {
 			float x = brickWidth * ((fSpaceBrick + 1) * j + 0.5);
 			float y = brickHeight * ((fSpaceBrick + 1) * i + 0.5);
 			brick[i * numBrickCols + j] = CreateRect("brick", glm::vec3(x, y, 0), brickHeight, brickWidth,
@@ -50,12 +48,13 @@ void Bricks::Update(float deltaTime)
 
 void Bricks::Blast(int brickIndex)
 {
+	// activate the brick scaling
 	scaleFactor[brickIndex] = 1;
 }
 
 bool Bricks::WasBlasted(int brickIndex)
 {
-	return scaleFactor.count(brickIndex) != 0;
+	return scaleFactor.count(brickIndex) > 0;
 }
 
 glm::mat3x3 Bricks::GetTransformMatrix(int brickIndex)

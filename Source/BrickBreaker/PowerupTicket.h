@@ -8,17 +8,17 @@ enum PowerupType
 	BOTTOM_WALL
 };
 
-class Powerup
+class PowerupTicket
 {
 public:
 	PowerupType type;
 	Mesh *mesh;
 
-	Powerup(PowerupType type, float x, float y);
-	~Powerup();
+	PowerupTicket(PowerupType type, float x, float y);
+	~PowerupTicket();
 	void Update(float deltaTime);
-	glm::mat3x3 GetTransformMatrix();
-	std::vector<glm::vec3> GetCorners();
+	glm::mat3x3 GetTransformMatrix() const;
+	std::vector<glm::vec3> GetCorners() const;
 
 private:
 	glm::mat3 translateMatrix, rotateMatrix;

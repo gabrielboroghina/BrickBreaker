@@ -5,7 +5,7 @@
 class Walls
 {
 public:
-	const float wallWidth = 15;
+	static constexpr float wallWidth = 15;
 	float verticalHeight, topWallWidth;
 	Mesh *meshLeft, *meshRight, *meshTop;
 
