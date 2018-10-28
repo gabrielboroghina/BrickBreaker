@@ -18,6 +18,7 @@ public:
 	~Powerup();
 	void Update(float deltaTime);
 	glm::mat3x3 GetTransformMatrix();
+	std::vector<glm::vec3> GetCorners();
 
 private:
 	glm::mat3 translateMatrix, rotateMatrix;

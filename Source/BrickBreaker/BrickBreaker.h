@@ -22,7 +22,7 @@ private:
 	Walls *walls;
 	Mesh *live[3];
 	Bricks *bricks;
-	PowerupsManager powerupsManager;
+	PowerupsManager *powerupsManager;
 
 	int lives;
 	const float collisionDist = 8;
@@ -34,6 +34,7 @@ private:
 	void RenderLives();
 	void RenderBricks();
 	void HandleBrickCollisions(float xBall, float yBall);
+	void HandlePowerupsCollisions(float xBall, float yBall);
 
 	void FrameStart() override;
 	void Update(float deltaTimeSeconds) override;

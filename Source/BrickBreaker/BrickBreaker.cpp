@@ -29,6 +29,8 @@ void BrickBreaker::Init()
 	paddle = new Object2D::Paddle();
 	walls = new Walls(viewportSize.x, viewportSize.y);
 	bricks = new Bricks(10, 10, viewportSize.y, viewportSize.x);
+
+	powerupsManager = new PowerupsManager(viewportSize.x);
 }
 
 void BrickBreaker::FrameStart()
@@ -77,10 +79,32 @@ void BrickBreaker::HandleBrickCollisions(float xBall, float yBall)
 
 				if (collisionDetected) {
 					bricks->Blast(brickIndex);
-					powerupsManager.MaySpawn((xMin + xMax) / 2, (yMin + yMax) / 2);
+					powerupsManager->MaySpawn((xMin + xMax) / 2, (yMin + yMax) / 2);
 				}
 			}
 		}
+}
+
+void BrickBreaker::HandlePowerupsCollisions(float xBall, float yBall)
+{
+	float xMin = paddle->xCenter - paddle->length;
+	float xMax = paddle->xCenter + paddle->length;
+
+	for (auto &powerup : powerupsManager->GetPowerups()) {
+		for (auto corner : powerup->GetCorners())
+			if (corner.x >= xMin && corner.x <= xMax &&
+				corner.y <= paddle->yTop) {
+				// detected collision; activate powerup and delete the mesh
+				powerupsManager->EnablePowerup(powerup);
+				break;
+			}
+	}
+
+	// check active powerups
+
+	// bottom wall
+	if (powerupsManager->isPowerupActive(BOTTOM_WALL) && yBall - powerupsManager->bottomWallYTop <= collisionDist)
+		ball->ReflectY();
 }
 
 void BrickBreaker::CheckCollisions()
@@ -117,6 +141,9 @@ void BrickBreaker::CheckCollisions()
 
 	// collision with a brick
 	HandleBrickCollisions(xBall, yBall);
+
+	// collision between a powerup and the paddle or between the ball and a powerup mesh
+	HandlePowerupsCollisions(xBall, yBall);
 }
 
 void BrickBreaker::ResetWithLiveLost()
@@ -174,9 +201,12 @@ void BrickBreaker::Update(float deltaTimeSeconds)
 		RenderMesh2D(pp.second, shaders["VertexColor"], bricks->GetTransformMatrix(pp.first));
 
 	// render powerups
-	powerupsManager.Update(deltaTimeSeconds);
-	for (auto &powerup : powerupsManager.GetPowerups())
+	powerupsManager->Update(deltaTimeSeconds);
+	for (auto &powerup : powerupsManager->GetPowerups())
 		RenderMesh2D(powerup->mesh, shaders["VertexColor"], powerup->GetTransformMatrix());
+	for (auto &activePowerup : powerupsManager->activePowerupsMeshes)
+		if (activePowerup.second)
+			RenderMesh2D(activePowerup.first, shaders["VertexColor"], glm::mat3(1));
 }
 
 void BrickBreaker::FrameEnd() {}
