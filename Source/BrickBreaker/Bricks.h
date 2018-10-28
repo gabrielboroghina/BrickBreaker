@@ -16,6 +16,7 @@ public:
 
 	void Update(float deltaTime);
 	void Blast(int brickIndex);
+	bool WasBlasted(int brickIndex);
 	glm::mat3x3 GetTransformMatrix(int brickIndex);
 	std::tuple<float, float, float, float> GetBrickBounds(int i, int j);
 

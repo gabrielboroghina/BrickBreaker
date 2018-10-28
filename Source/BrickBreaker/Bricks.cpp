@@ -4,7 +4,6 @@
 #include "Transform2D.h"
 #include <tuple>
 
-
 Bricks::Bricks(int numBrickLines, int numBrickCols, float winHeight, float winWidth) : numBrickLines(numBrickLines),
                                                                                        numBrickCols(numBrickCols)
 {
@@ -52,6 +51,11 @@ void Bricks::Update(float deltaTime)
 void Bricks::Blast(int brickIndex)
 {
 	scaleFactor[brickIndex] = 1;
+}
+
+bool Bricks::WasBlasted(int brickIndex)
+{
+	return scaleFactor.count(brickIndex) != 0;
 }
 
 glm::mat3x3 Bricks::GetTransformMatrix(int brickIndex)

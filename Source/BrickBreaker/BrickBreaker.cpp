@@ -47,8 +47,9 @@ void BrickBreaker::HandleBrickCollisions(float xBall, float yBall)
 	float xMin, xMax, yMin, yMax;
 
 	for (int i = 0; i < bricks->numBrickLines; i++)
-		for (int j = 0; j < bricks->numBrickCols; j++)
-			if (bricks->brick.count(i * bricks->numBrickCols + j)) {
+		for (int j = 0; j < bricks->numBrickCols; j++) {
+			int brickIndex = i * bricks->numBrickCols + j;
+			if (bricks->brick.count(brickIndex) && !bricks->WasBlasted(brickIndex)) {
 
 				// compute brick iterator in bricks vector
 				std::tie(xMin, xMax, yMin, yMax) = bricks->GetBrickBounds(i, j);
@@ -59,7 +60,7 @@ void BrickBreaker::HandleBrickCollisions(float xBall, float yBall)
 						(yBall <= yMin && yMin - yBall <= collisionDist && ball->vy > 0)) {
 						// collision from bottom
 						ball->ReflectY();
-						bricks->Blast(i * bricks->numBrickCols + j);
+						bricks->Blast(brickIndex);
 					}
 				}
 
@@ -69,10 +70,11 @@ void BrickBreaker::HandleBrickCollisions(float xBall, float yBall)
 						(xBall <= xMin && xMin - xBall <= collisionDist && ball->vx > 0)) {
 						// collision from right
 						ball->ReflectX();
-						bricks->Blast(i * bricks->numBrickCols + j);
+						bricks->Blast(brickIndex);
 					}
 				}
 			}
+		}
 }
 
 void BrickBreaker::CheckCollisions()

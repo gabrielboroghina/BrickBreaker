@@ -25,6 +25,6 @@ public:
 	void ReflectAngled(float cos);
 
 private:
-	const float velocity = 400;
+	const float velocity = 450;
 };
 }
