@@ -25,7 +25,7 @@ private:
 
 	bool isGameOver;
 	int lives;
-	const float collisionDist = 9;
+	float collisionDist;
 	glm::vec2 viewportSize, windowScale;
 
 	void CheckCollisions();

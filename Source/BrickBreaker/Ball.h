@@ -11,14 +11,14 @@ public:
 	Mesh *mesh;
 	bool isAttached; // checks if ball is attached to the paddle
 
-	float radius;
+	const float radius = 9;
 	float vx, vy; // the ball's velocity
 
 	Ball(float initialX, float initialY);
 	~Ball();
 	void Attach();
 	void Detach();
-	void Scale(float scaleFactor);
+	void Scale(float scaleX, float scaleY);
 	void Update(float deltaTime, float xCursor, float yPos);
 	void ReflectX();
 	void ReflectY();

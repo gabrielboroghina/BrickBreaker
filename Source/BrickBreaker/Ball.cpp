@@ -5,10 +5,10 @@
 
 namespace Object2D
 {
-Ball::Ball(float initialX, float initialY) : radius(9), isAttached(true)
+Ball::Ball(float initialX, float initialY) : isAttached(true)
 {
 	mesh = CreateCircle(radius);
-	transformMatrix = Transform2D::Translate(initialX, initialY);
+	translateMatrix = Transform2D::Translate(initialX, initialY);
 	scaleMatrix = glm::mat3(1);
 }
 
@@ -25,18 +25,17 @@ void Ball::Detach()
 	vy = velocity;
 }
 
-void Ball::Scale(float scaleFactor)
+void Ball::Scale(float scaleX, float scaleY)
 {
-	scaleMatrix = Transform2D::Scale(scaleFactor, scaleFactor);
-	transformMatrix *= scaleMatrix;
+	scaleMatrix = Transform2D::Scale(scaleX, scaleY);
 }
 
 void Ball::Update(float deltaTime, float xCursor, float yPos)
 {
 	if (isAttached)
-		transformMatrix = Transform2D::Translate(xCursor, yPos) * scaleMatrix;
+		translateMatrix = Transform2D::Translate(xCursor, yPos);
 	else
-		transformMatrix = Transform2D::Translate(deltaTime * vx, deltaTime * vy) * transformMatrix;
+		translateMatrix = Transform2D::Translate(deltaTime * vx, deltaTime * vy) * translateMatrix;
 }
 
 void Ball::ReflectX() { vx = -vx; }

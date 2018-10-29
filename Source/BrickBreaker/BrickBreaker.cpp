@@ -38,6 +38,8 @@ void BrickBreaker::Init()
 
 	powerupsManager = PowerupManager::GetInstance();
 	PowerupManager::SetViewportSize(viewportSize);
+
+	collisionDist = ball->radius;
 }
 
 void BrickBreaker::FrameStart()
@@ -119,7 +121,7 @@ void BrickBreaker::HandlePowerupsCollisions(float xBall, float yBall)
 				// detected collision; activate powerup and delete the mesh
 				if (powerupTicket->type == SHOOTER) {
 					ball->Attach();
-					ball->Scale(0);
+					ball->Scale(0, 0);
 				}
 				powerupsManager->EnablePowerup(powerupTicket);
 				break;
@@ -135,8 +137,8 @@ void BrickBreaker::HandlePowerupsCollisions(float xBall, float yBall)
 
 void BrickBreaker::CheckCollisions()
 {
-	float xBall = ball->transformMatrix[2][0];
-	float yBall = ball->transformMatrix[2][1];
+	float xBall = ball->translateMatrix[2][0];
+	float yBall = ball->translateMatrix[2][1];
 
 	// check if ball exited the game area
 	if ((xBall < 0 || yBall < 0 || xBall > viewportSize.x || yBall > viewportSize.y) && !ball->isAttached)
@@ -179,7 +181,7 @@ void BrickBreaker::ResetWithLiveLost()
 
 	if (!lives) {
 		// GAME OVER
-		ball->Scale(0);
+		ball->Scale(0, 0);
 		isGameOver = true;
 	}
 }
@@ -188,7 +190,7 @@ void BrickBreaker::ResetGame()
 {
 	isGameOver = false;
 	lives = 3;
-	ball->Scale(1);
+	ball->Scale(1, 1);
 	bricks = new Bricks(10, 10, viewportSize);
 }
 
@@ -228,7 +230,7 @@ void BrickBreaker::Update(float deltaTimeSeconds)
 	RenderMesh2D(paddle->mesh, colorShader, Translate(paddle->xCenter, paddle->yCenter));
 
 	ball->Update(deltaTimeSeconds, cursorXPos, 45.0f);
-	RenderMesh2D(ball->mesh, colorShader, ball->transformMatrix);
+	RenderMesh2D(ball->mesh, colorShader, ball->GetTransformMatrix());
 
 	RenderLives();
 
@@ -251,7 +253,7 @@ void BrickBreaker::Update(float deltaTimeSeconds)
 			RenderMesh2D(bullet.first, colorShader, bullet.second);
 
 		if (shooter->HasEnded()) // reactivate the ball
-			ball->Scale(1);
+			ball->Scale(1, 1);
 	}
 }
 
@@ -270,15 +272,14 @@ void BrickBreaker::OnMouseBtnPress(int mouseX, int mouseY, int button, int mods)
 	// add mouse button press event
 	switch (button) {
 		case GLFW_MOUSE_BUTTON_2: // left button
-			if (isGameOver) ResetGame();
-
-			if (powerupsManager->IsPowerupActive(SHOOTER)) {
+			if (isGameOver)
+				ResetGame();
+			else if (powerupsManager->IsPowerupActive(SHOOTER)) {
 				static_cast<Shooter *>(powerupsManager->GetPowerup(SHOOTER))->Fire(
 					(float)window->GetCursorPosition().x / windowScale.x);
 			}
-			else {
-				if (ball->isAttached) ball->Detach();
-			}
+			else if (ball->isAttached)
+				ball->Detach();
 			break;
 	}
 }
@@ -291,4 +292,7 @@ void BrickBreaker::OnWindowResize(int width, int height)
 {
 	windowScale.x = width / viewportSize.x;
 	windowScale.y = height / viewportSize.y;
+
+	//float m = std::min(1 / windowScale.x, 1 / windowScale.y);
+	//ball->Scale(m, m);
 }
