@@ -4,11 +4,17 @@
 #include "Transform2D.h"
 #include "BasicMeshes.h"
 
-using namespace std;
+BrickBreaker::BrickBreaker() : isGameOver(false), lives(3), windowScale(glm::vec2(1, 1)) {}
 
-BrickBreaker::BrickBreaker() : isGameOver(false), windowWidthScale(1), windowHeightScale(1), lives(3) {}
-
-BrickBreaker::~BrickBreaker() {}
+BrickBreaker::~BrickBreaker()
+{
+	delete bricks;
+	delete walls;
+	delete paddle;
+	delete ball;
+	delete powerupsManager;
+	for (int i = 0; i < 3; i++) delete live[i];
+}
 
 void BrickBreaker::Init()
 {
@@ -28,7 +34,7 @@ void BrickBreaker::Init()
 	ball = new Object2D::Ball(viewportSize.x / 2.0f, 45.0f);
 	paddle = new Object2D::Paddle();
 	walls = new Walls(viewportSize.x, viewportSize.y);
-	bricks = new Bricks(10, 10, viewportSize.y, viewportSize.x);
+	bricks = new Bricks(10, 10, viewportSize);
 
 	powerupsManager = PowerupManager::GetInstance();
 	PowerupManager::SetViewportSize(viewportSize);
@@ -78,6 +84,20 @@ void BrickBreaker::HandleBrickCollisions(float xBall, float yBall)
 					}
 				}
 
+				// bullets (shooter)
+				Shooter *shooter = static_cast<Shooter *>(PowerupManager::GetPowerup(SHOOTER));
+				if (shooter)
+					for (auto it = shooter->GetBulletMeshes().begin(); it != shooter->GetBulletMeshes().end();) {
+						glm::vec3 bulletPos = it->second * glm::vec3(0, 0, 1);
+						if (bulletPos.x >= xMin && bulletPos.x <= xMax && bulletPos.y >= yMin && bulletPos.y <= yMax) {
+							bricks->Blast(brickIndex); // don't spawn from bullet-destroyed bricks
+							auto auxIt = it;
+							++it;
+							shooter->KillBullet(auxIt->first);
+						}
+						else ++it;
+					}
+
 				if (collisionDetected) {
 					bricks->Blast(brickIndex);
 					powerupsManager->MaySpawn((xMin + xMax) / 2, (yMin + yMax) / 2);
@@ -92,12 +112,16 @@ void BrickBreaker::HandlePowerupsCollisions(float xBall, float yBall)
 	float xMax = paddle->xCenter + paddle->length;
 
 	// check powerup tickets collisions
-	for (auto &powerup : powerupsManager->GetTickets()) {
-		for (auto corner : powerup->GetCorners())
+	for (auto &powerupTicket : powerupsManager->GetTickets()) {
+		for (auto corner : powerupTicket->GetCorners())
 			if (corner.x >= xMin && corner.x <= xMax &&
 				corner.y <= paddle->yTop) {
 				// detected collision; activate powerup and delete the mesh
-				powerupsManager->EnablePowerup(powerup);
+				if (powerupTicket->type == SHOOTER) {
+					ball->Attach();
+					ball->Scale(0);
+				}
+				powerupsManager->EnablePowerup(powerupTicket);
 				break;
 			}
 	}
@@ -115,7 +139,7 @@ void BrickBreaker::CheckCollisions()
 	float yBall = ball->transformMatrix[2][1];
 
 	// check if ball exited the game area
-	if (xBall < 0 || yBall < 0 || xBall > viewportSize.x || yBall > viewportSize.y)
+	if ((xBall < 0 || yBall < 0 || xBall > viewportSize.x || yBall > viewportSize.y) && !ball->isAttached)
 		ResetWithLiveLost();
 
 	// collision with the paddle
@@ -155,17 +179,25 @@ void BrickBreaker::ResetWithLiveLost()
 
 	if (!lives) {
 		// GAME OVER
-		ball->scale(0);
+		ball->Scale(0);
 		isGameOver = true;
 	}
+}
+
+void BrickBreaker::ResetGame()
+{
+	isGameOver = false;
+	lives = 3;
+	ball->Scale(1);
+	bricks = new Bricks(10, 10, viewportSize);
 }
 
 void BrickBreaker::RenderLives()
 {
 	float livePos[3][2] = {
-		{20, 15},
-		{40, 15},
-		{60, 15}
+		{25, 20},
+		{45, 20},
+		{65, 20}
 	};
 
 	for (int i = 0; i < lives; i++)
@@ -174,46 +206,53 @@ void BrickBreaker::RenderLives()
 
 void BrickBreaker::Update(float deltaTimeSeconds)
 {
-	if (isGameOver) return;
+	if (isGameOver)
+		return;
 
-	if (!ball->isAttached)
-		CheckCollisions();
+	CheckCollisions();
 
+	Shader *colorShader = shaders["VertexColor"];
 	// render walls
-	RenderMesh2D(walls->meshLeft, shaders["VertexColor"],
-	             Transform2D::Translate(walls->wallWidth / 2, viewportSize.y - walls->verticalHeight / 2));
-	RenderMesh2D(walls->meshRight, shaders["VertexColor"],
-	             Transform2D::Translate(walls->topWallWidth - walls->wallWidth / 2,
-	                                    viewportSize.y - walls->verticalHeight / 2));
-	RenderMesh2D(walls->meshTop, shaders["VertexColor"],
-	             Transform2D::Translate(walls->topWallWidth / 2.0f, viewportSize.y - walls->wallWidth / 2));
+	using Transform2D::Translate;
+	RenderMesh2D(walls->meshLeft, colorShader,
+	             Translate(walls->wallWidth / 2, viewportSize.y - walls->verticalHeight / 2));
 
-	float cursorXPos = (float)window->GetCursorPosition().x / windowWidthScale;
+	RenderMesh2D(walls->meshRight, colorShader, Translate(walls->topWallWidth - walls->wallWidth / 2,
+	                                                      viewportSize.y - walls->verticalHeight / 2));
+
+	RenderMesh2D(walls->meshTop, colorShader,
+	             Translate(walls->topWallWidth / 2.0f, viewportSize.y - walls->wallWidth / 2));
+
+	float cursorXPos = window->GetCursorPosition().x / windowScale.x;
 	paddle->CenterAtXPos(cursorXPos);
-	RenderMesh2D(paddle->mesh, shaders["VertexColor"], Transform2D::Translate(paddle->xCenter, paddle->yCenter));
+	RenderMesh2D(paddle->mesh, colorShader, Translate(paddle->xCenter, paddle->yCenter));
 
 	ball->Update(deltaTimeSeconds, cursorXPos, 45.0f);
-	RenderMesh2D(ball->mesh, shaders["VertexColor"], ball->transformMatrix);
+	RenderMesh2D(ball->mesh, colorShader, ball->transformMatrix);
 
 	RenderLives();
 
 	// render bricks
 	bricks->Update(deltaTimeSeconds);
 	for (auto &pp : bricks->brick)
-		RenderMesh2D(pp.second, shaders["VertexColor"], bricks->GetTransformMatrix(pp.first));
+		RenderMesh2D(pp.second, colorShader, bricks->GetTransformMatrix(pp.first));
 
 	// render powerups
 	powerupsManager->UpdatePowerups(deltaTimeSeconds);
 	for (auto &powerupTicket : powerupsManager->GetTickets())
-		RenderMesh2D(powerupTicket->mesh, shaders["VertexColor"], powerupTicket->GetTransformMatrix());
+		RenderMesh2D(powerupTicket->mesh, colorShader, powerupTicket->GetTransformMatrix());
 
 	for (auto &activePowerup : PowerupManager::activePowerupsMeshes)
-		RenderMesh2D(activePowerup.first, shaders["VertexColor"], activePowerup.second);
+		RenderMesh2D(activePowerup.first, colorShader, activePowerup.second);
 
 	Shooter *shooter = static_cast<Shooter *>(PowerupManager::GetPowerup(SHOOTER));
-	if (shooter)
+	if (shooter) {
 		for (auto &bullet : shooter->GetBulletMeshes())
-			RenderMesh2D(bullet.first, shaders["VertexColor"], bullet.second);
+			RenderMesh2D(bullet.first, colorShader, bullet.second);
+
+		if (shooter->HasEnded()) // reactivate the ball
+			ball->Scale(1);
+	}
 }
 
 void BrickBreaker::FrameEnd() {}
@@ -231,12 +270,14 @@ void BrickBreaker::OnMouseBtnPress(int mouseX, int mouseY, int button, int mods)
 	// add mouse button press event
 	switch (button) {
 		case GLFW_MOUSE_BUTTON_2: // left button
-			if (ball->isAttached) ball->Detach();
+			if (isGameOver) ResetGame();
 
-			if (isGameOver) {
-				// reset game
-				isGameOver = false;
-				lives = 3;
+			if (powerupsManager->IsPowerupActive(SHOOTER)) {
+				static_cast<Shooter *>(powerupsManager->GetPowerup(SHOOTER))->Fire(
+					(float)window->GetCursorPosition().x / windowScale.x);
+			}
+			else {
+				if (ball->isAttached) ball->Detach();
 			}
 			break;
 	}
@@ -248,8 +289,6 @@ void BrickBreaker::OnMouseScroll(int mouseX, int mouseY, int offsetX, int offset
 
 void BrickBreaker::OnWindowResize(int width, int height)
 {
-	// change walls dimensions
-	windowWidthScale = width / viewportSize.x;
-	windowHeightScale = height / viewportSize.y;
-	walls->verticalHeight = height * 0.9f;
+	windowScale.x = width / viewportSize.x;
+	windowScale.y = height / viewportSize.y;
 }

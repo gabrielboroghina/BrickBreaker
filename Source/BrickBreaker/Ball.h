@@ -18,7 +18,7 @@ public:
 	~Ball();
 	void Attach();
 	void Detach();
-	void scale(float scaleFactor);
+	void Scale(float scaleFactor);
 	void Update(float deltaTime, float xCursor, float yPos);
 	void ReflectX();
 	void ReflectY();

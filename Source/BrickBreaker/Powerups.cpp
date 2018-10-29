@@ -35,12 +35,12 @@ void BottomWall::Enable()
 }
 
 
-Shooter::Shooter() { }
+Shooter::Shooter() : isActive(false) { }
 
 Shooter::~Shooter()
 {
 	while (!recycledBullets.empty())
-		delete recycledBullets.top().first;
+		delete recycledBullets.top();
 
 	for (auto &bullet : activeBullets)
 		delete bullet.first;
@@ -48,8 +48,16 @@ Shooter::~Shooter()
 
 void Shooter::Update(float deltaTime)
 {
-	for (auto bullet : activeBullets)
-		bullet.second *= Transform2D::Translate(0, -deltaTime);
+	ttl -= deltaTime;
+
+	if (ttl <= 0) {
+		for (auto &bullet : activeBullets)
+			recycledBullets.push(bullet.first);
+		activeBullets.clear();
+	}
+
+	for (auto &bullet : activeBullets)
+		bullet.second *= Transform2D::Translate(0, deltaTime * 600);
 }
 
 std::unordered_map<Mesh *, glm::mat3x3> &Shooter::GetBulletMeshes()
@@ -57,20 +65,36 @@ std::unordered_map<Mesh *, glm::mat3x3> &Shooter::GetBulletMeshes()
 	return activeBullets;
 }
 
-void Shooter::Fire()
+void Shooter::Fire(float x)
 {
 	if (!recycledBullets.empty()) {
-		activeBullets[recycledBullets.top().first] = glm::mat3(1);
+		activeBullets[recycledBullets.top()] = Transform2D::Translate(x, 0);
 		recycledBullets.pop();
 	}
 	else {
 		// spawn a new bullet
-		activeBullets[CreateRect("bullet", glm::vec3(0, /* yPaddle */30, 1), 4, 2, glm::vec3(0.27f, 0.73f, 0.1f), true)]
-			= glm::mat3(1);
+		activeBullets[CreateRect("bullet", glm::vec3(0, /* yPaddle */30, 1), 8, 3, glm::vec3(0.27f, 0.73f, 0.1f), true)]
+			= Transform2D::Translate(x, 0);
 	}
 }
 
 void Shooter::Enable()
 {
 	Powerup::Enable();
+	isActive = true;
+}
+
+void Shooter::KillBullet(Mesh *bullet)
+{
+	activeBullets.erase(bullet);
+	recycledBullets.push(bullet);
+}
+
+bool Shooter::HasEnded()
+{
+	if (isActive && ttl <= 0) {
+		isActive = false;
+		return true;
+	}
+	return false;
 }

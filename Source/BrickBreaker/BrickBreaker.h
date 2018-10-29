@@ -25,12 +25,12 @@ private:
 
 	bool isGameOver;
 	int lives;
-	const float collisionDist = 8;
-	float windowWidthScale, windowHeightScale;
-	glm::vec2 viewportSize;
+	const float collisionDist = 9;
+	glm::vec2 viewportSize, windowScale;
 
 	void CheckCollisions();
 	void ResetWithLiveLost();
+	void ResetGame();
 	void RenderLives();
 	void RenderBricks();
 	void HandleBrickCollisions(float xBall, float yBall);

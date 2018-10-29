@@ -25,9 +25,9 @@ void Ball::Detach()
 	vy = velocity;
 }
 
-void Ball::scale(float scaleFactor)
+void Ball::Scale(float scaleFactor)
 {
-	scaleMatrix *= Transform2D::Scale(scaleFactor, scaleFactor);
+	scaleMatrix = Transform2D::Scale(scaleFactor, scaleFactor);
 	transformMatrix *= scaleMatrix;
 }
 

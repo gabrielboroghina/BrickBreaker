@@ -11,7 +11,7 @@ public:
 	glm::mat3x3 translateMatrix;
 	float brickHeight, brickWidth;
 
-	Bricks(int numBrickLines, int numBrickCols, float winHeight, float winWidth);
+	Bricks(int numBrickLines, int numBrickCols, glm::vec2 viewportSize);
 	~Bricks();
 
 	void Update(float deltaTime);

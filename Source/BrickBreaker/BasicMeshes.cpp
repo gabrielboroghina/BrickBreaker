@@ -100,7 +100,7 @@ Mesh *CreateHeart()
 	std::vector<unsigned short> indices = {0, 1, 2};
 
 	for (int x = -3; x <= 3; x += 6) {
-		int centerIndex = vertices.size();
+		unsigned short centerIndex = (unsigned short)vertices.size();
 		vertices.push_back(VertexFormat(glm::vec3(x, 9, 0), magenta)); // center
 		vertices.push_back(VertexFormat(glm::vec3(x + radius, 9, 0), magenta));
 

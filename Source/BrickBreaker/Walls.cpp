@@ -4,7 +4,7 @@
 
 Walls::Walls(float initialX, float initialY)
 {
-	verticalHeight = initialY * 0.9;
+	verticalHeight = initialY * 0.9f;
 	topWallWidth = initialX;
 	meshLeft = CreateRect("wall", glm::vec3(0, 0, 0), verticalHeight, wallWidth, color, true);
 	meshRight = CreateRect("wall", glm::vec3(0, 0, 0), verticalHeight, wallWidth, color, true);

@@ -3,7 +3,7 @@
 #include <ctime>
 #include "BasicMeshes.h"
 
-PowerupManager *PowerupManager::instance = nullptr;
+PowerupManager *PowerupManager::instance = nullptr; // singleton instance
 
 std::unordered_map<Mesh *, glm::mat3x3> PowerupManager::activePowerupsMeshes;
 glm::vec2 PowerupManager::viewportSize;

@@ -46,11 +46,14 @@ public:
 	Shooter();
 	~Shooter();
 	void Update(float deltaTime) override;
-	void Fire();
+	void Fire(float x);
 	void Enable() override;
+	void KillBullet(Mesh *bullet);
+	bool HasEnded(); // one-time check for the shooter timeout
 	std::unordered_map<Mesh *, glm::mat3x3> &GetBulletMeshes();
 
 private:
 	std::unordered_map<Mesh *, glm::mat3x3> activeBullets;
-	std::stack<std::pair<Mesh *, glm::mat3x3>> recycledBullets;
+	std::stack<Mesh *> recycledBullets;
+	bool isActive;
 };
