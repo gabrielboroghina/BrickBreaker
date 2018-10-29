@@ -2,11 +2,7 @@
 
 #include <glm/mat3x3.hpp>
 #include "Core/GPU/Mesh.h"
-
-enum PowerupType
-{
-	BOTTOM_WALL
-};
+#include "Powerups.h"
 
 class PowerupTicket
 {

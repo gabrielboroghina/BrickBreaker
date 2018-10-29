@@ -7,6 +7,7 @@ PowerupManager *PowerupManager::instance = nullptr;
 
 std::unordered_map<Mesh *, glm::mat3x3> PowerupManager::activePowerupsMeshes;
 glm::vec2 PowerupManager::viewportSize;
+std::unordered_map<PowerupType, Powerup *> PowerupManager::powerups;
 
 PowerupManager::PowerupManager()
 {
@@ -14,7 +15,8 @@ PowerupManager::PowerupManager()
 
 	// TODO duplicated enum values
 	powerups = {
-		{BOTTOM_WALL, nullptr}
+		{BOTTOM_WALL, nullptr},
+		{SHOOTER, nullptr}
 	};
 }
 
@@ -34,7 +36,7 @@ void PowerupManager::MaySpawn(float x, float y)
 {
 	if (rand() % 2 == 1) {
 		// decide if we'll spawn a powerup ticket
-		PowerupType powerupType = static_cast<PowerupType>(rand() % 1);
+		PowerupType powerupType = static_cast<PowerupType>(rand() % 2);
 		powerupTickets.push_back(new PowerupTicket(powerupType, x, y));
 
 		// lazy initialization for powerup
@@ -42,6 +44,10 @@ void PowerupManager::MaySpawn(float x, float y)
 			switch (powerupType) {
 				case BOTTOM_WALL:
 					powerups[powerupType] = new BottomWall();
+					break;
+				case SHOOTER:
+					powerups[powerupType] = new Shooter();
+					break;
 			}
 	}
 }
@@ -58,6 +64,11 @@ void PowerupManager::UpdatePowerups(float deltaTime)
 	for (auto &p : powerups)
 		if (p.second && p.second->IsActive())
 			p.second->Update(deltaTime);
+}
+
+Powerup *PowerupManager::GetPowerup(PowerupType type)
+{
+	return powerups[type];
 }
 
 void PowerupManager::KillPowerupTicket(PowerupTicket *p)

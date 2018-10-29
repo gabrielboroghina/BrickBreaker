@@ -21,6 +21,7 @@ public:
 	std::vector<PowerupTicket *> &GetTickets();
 	void EnablePowerup(PowerupTicket *powerupTicket);
 	bool IsPowerupActive(PowerupType type);
+	static Powerup *GetPowerup(PowerupType type);
 
 	friend class BottomWall;
 
@@ -28,5 +29,5 @@ private:
 	PowerupManager();
 	static glm::vec2 viewportSize;
 	std::vector<PowerupTicket *> powerupTickets;
-	std::unordered_map<PowerupType, Powerup *> powerups;
+	static std::unordered_map<PowerupType, Powerup *> powerups;
 };

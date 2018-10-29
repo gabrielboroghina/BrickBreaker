@@ -209,6 +209,11 @@ void BrickBreaker::Update(float deltaTimeSeconds)
 
 	for (auto &activePowerup : PowerupManager::activePowerupsMeshes)
 		RenderMesh2D(activePowerup.first, shaders["VertexColor"], activePowerup.second);
+
+	Shooter *shooter = static_cast<Shooter *>(PowerupManager::GetPowerup(SHOOTER));
+	if (shooter)
+		for (auto &bullet : shooter->GetBulletMeshes())
+			RenderMesh2D(bullet.first, shaders["VertexColor"], bullet.second);
 }
 
 void BrickBreaker::FrameEnd() {}
