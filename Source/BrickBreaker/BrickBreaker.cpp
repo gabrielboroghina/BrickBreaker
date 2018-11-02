@@ -33,7 +33,7 @@ void BrickBreaker::Init()
 
 	paddle = new Object2D::Paddle();
 	ball = new Object2D::Ball(viewportSize.x / 2.0f, paddle->yTop);
-	walls = new Walls(viewportSize.x, viewportSize.y);
+	walls = new Walls(viewportSize);
 	bricks = new Bricks(10, 10, viewportSize);
 
 	powerupsManager = PowerupManager::GetInstance();
@@ -200,9 +200,9 @@ void BrickBreaker::ResetGame()
 void BrickBreaker::RenderLives()
 {
 	float livePos[3][2] = {
-		{25, 20},
-		{45, 20},
-		{65, 20}
+		{25, 18},
+		{45, 18},
+		{65, 18}
 	};
 
 	for (int i = 0; i < lives; i++)
@@ -259,7 +259,7 @@ void BrickBreaker::Update(float deltaTimeSeconds)
 	}
 
 	FatBall *fatBall = static_cast<FatBall *>(PowerupManager::GetPowerup(FAT_BALL));
-	if (fatBall && fatBall->HasEnded())
+	if (fatBall && fatBall->HasEnded() && !powerupsManager->IsPowerupActive(SHOOTER))
 		ball->Resize(1);
 }
 

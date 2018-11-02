@@ -2,10 +2,10 @@
 #include <glm/detail/type_vec3.hpp>
 #include "BasicMeshes.h"
 
-Walls::Walls(float initialX, float initialY)
+Walls::Walls(glm::vec2 viewportSize)
 {
-	verticalHeight = initialY * 0.9f;
-	topWallWidth = initialX;
+	verticalHeight = viewportSize.y * 0.85f;
+	topWallWidth = viewportSize.x;
 	meshLeft = CreateRect("wall", glm::vec3(0, 0, 0), verticalHeight, wallWidth, color, true);
 	meshRight = CreateRect("wall", glm::vec3(0, 0, 0), verticalHeight, wallWidth, color, true);
 	meshTop = CreateRect("wall", glm::vec3(0, 0, 0), wallWidth, topWallWidth, color, true);

@@ -64,15 +64,14 @@ Mesh *CreateMeshWithVertices(const char *name, const std::vector<VertexFormat> &
 	return mesh;
 }
 
-Mesh *CreateCircle(float radius)
+Mesh *CreateCircle(float radius, glm::vec3 color, glm::vec3 marginColor)
 {
 	// Create circle
 	std::vector<VertexFormat> vertices;
 	std::vector<unsigned short> indices;
-	glm::vec3 marginColor = glm::vec3(0.45f, 0.45f, 0.45f); // gray
 
 	// Insert center
-	vertices.push_back(VertexFormat(glm::vec3(0, 0, 0), glm::vec3(1, 1, 1)));
+	vertices.push_back(VertexFormat(glm::vec3(0, 0, 0), color));
 	vertices.push_back(VertexFormat(glm::vec3(radius, 0, 0), marginColor));
 
 	for (int u = 1; u <= 360; u++) {

@@ -9,7 +9,7 @@ public:
 	float verticalHeight, topWallWidth;
 	Mesh *meshLeft, *meshRight, *meshTop;
 
-	Walls(float initialX, float initialY);
+	Walls(glm::vec2 viewportSize);
 	~Walls();
 
 private:

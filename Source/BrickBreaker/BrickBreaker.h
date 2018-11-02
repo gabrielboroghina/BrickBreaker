@@ -7,6 +7,8 @@
 #include "Bricks.h"
 #include "PowerupManager.h"
 
+using namespace Object2D;
+
 class BrickBreaker : public SimpleScene
 {
 public:
@@ -16,8 +18,8 @@ public:
 	void Init() override;
 
 private:
-	Object2D::Ball *ball;
-	Object2D::Paddle *paddle;
+	Ball *ball;
+	Paddle *paddle;
 	Walls *walls;
 	Mesh *live[3];
 	Bricks *bricks;
@@ -31,7 +33,6 @@ private:
 	void ResetWithLiveLost();
 	void ResetGame();
 	void RenderLives();
-	void RenderBricks();
 	void HandleBrickCollisions(float xBall, float yBall);
 	void HandlePowerupsCollisions(float xBall, float yBall);
 

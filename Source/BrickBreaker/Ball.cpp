@@ -8,7 +8,7 @@ namespace Object2D
 Ball::Ball(float initialX, float yBottom) : isAttached(true)
 {
 	radius = stdRadius;
-	mesh = CreateCircle(radius);
+	mesh = CreateCircle(radius, glm::vec3(1, 1, 1), glm::vec3(0.26f, 0.31f, 0.19f));
 	translateMatrix = Transform2D::Translate(initialX, yBottom + radius);
 	scaleMatrix = glm::mat3(1);
 }
