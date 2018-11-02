@@ -11,8 +11,8 @@ public:
 	Mesh *mesh;
 	bool isAttached; // checks if ball is attached to the paddle
 
-	static constexpr float yPosAttached = 45;
-	const float radius = 10;
+	float radius;
+	const float stdRadius = 10;
 	float vx, vy; // the ball's velocity
 
 	Ball(float initialX, float initialY);
@@ -20,6 +20,7 @@ public:
 	void Attach();
 	void Detach();
 	void Scale(float scaleX, float scaleY);
+	void Resize(float newRadius);
 	void Update(float deltaTime, float xCursor, float yPos);
 	void ReflectX();
 	void ReflectY();

@@ -16,7 +16,8 @@ PowerupManager::PowerupManager()
 	// TODO duplicated enum values
 	powerups = {
 		{BOTTOM_WALL, nullptr},
-		{SHOOTER, nullptr}
+		{SHOOTER, nullptr},
+		{FAT_BALL, nullptr}
 	};
 }
 
@@ -34,9 +35,9 @@ void PowerupManager::SetViewportSize(glm::vec2 size) { viewportSize = size; }
 
 void PowerupManager::MaySpawn(float x, float y)
 {
-	if (rand() % 2 == 1) {
+	if (rand() % 3 == 1) {
 		// decide if we'll spawn a powerup ticket
-		PowerupType powerupType = static_cast<PowerupType>(rand() % 2);
+		PowerupType powerupType = static_cast<PowerupType>(rand() % 3);
 		powerupTickets.push_back(new PowerupTicket(powerupType, x, y));
 
 		// lazy initialization for powerup
@@ -47,6 +48,9 @@ void PowerupManager::MaySpawn(float x, float y)
 					break;
 				case SHOOTER:
 					powerups[powerupType] = new Shooter();
+					break;
+				case FAT_BALL:
+					powerups[powerupType] = new FatBall();
 					break;
 			}
 	}

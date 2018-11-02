@@ -4,9 +4,24 @@
 #include "PowerupManager.h"
 #include "Transform2D.h"
 
+Powerup::Powerup() : ttl(0), isActive(false) { }
+
 bool Powerup::IsActive() const { return ttl > 0; }
 
-void Powerup::Enable() { ttl = 4; }
+void Powerup::Enable()
+{
+	isActive = true;
+	ttl = 4;
+}
+
+bool Powerup::HasEnded()
+{
+	if (isActive && ttl <= 0) {
+		isActive = false;
+		return true;
+	}
+	return false;
+}
 
 BottomWall::BottomWall()
 {
@@ -34,8 +49,7 @@ void BottomWall::Enable()
 	PowerupManager::activePowerupsMeshes[mesh] = transformMatrix;
 }
 
-
-Shooter::Shooter() : isActive(false) { }
+Shooter::Shooter() {}
 
 Shooter::~Shooter()
 {
@@ -78,23 +92,17 @@ void Shooter::Fire(float x)
 	}
 }
 
-void Shooter::Enable()
-{
-	Powerup::Enable();
-	isActive = true;
-}
-
 void Shooter::KillBullet(Mesh *bullet)
 {
 	activeBullets.erase(bullet);
 	recycledBullets.push(bullet);
 }
 
-bool Shooter::HasEnded()
+FatBall::FatBall() {}
+
+FatBall::~FatBall() {}
+
+void FatBall::Update(float deltaTime)
 {
-	if (isActive && ttl <= 0) {
-		isActive = false;
-		return true;
-	}
-	return false;
+	ttl -= deltaTime;
 }

@@ -5,7 +5,7 @@
 #include <tuple>
 
 Bricks::Bricks(int numBrickLines, int numBrickCols, glm::vec2 viewportSize) :
-	numBrickLines(numBrickLines), numBrickCols(numBrickCols), fSpaceBrick(0.6f)
+	numBrickLines(numBrickLines), numBrickCols(numBrickCols), fSpaceBrick(0.4f)
 {
 	const float fXSpace = 0.6f, fYSpace = 0.4f;
 

@@ -6,8 +6,9 @@
 #include <tuple>
 
 std::unordered_map<PowerupType, glm::vec3> colorByType = {
-	{PowerupType::BOTTOM_WALL, glm::vec3(1, 1, 0)},
-	{PowerupType::SHOOTER, glm::vec3(1, 0, 0.1f)}
+	{BOTTOM_WALL, glm::vec3(1, 1, 0)},
+	{SHOOTER, glm::vec3(1, 0, 0.1f)},
+	{FAT_BALL, glm::vec3(0.5f, 0.04f, 0.64f)}
 };
 
 PowerupTicket::PowerupTicket(PowerupType type, float x, float y) : type(type)

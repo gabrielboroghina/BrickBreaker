@@ -14,16 +14,17 @@ enum PowerupType
 class Powerup
 {
 public:
-	Powerup() : ttl(0) {}
-
+	Powerup();
 	virtual ~Powerup() {}
 
 	virtual void Update(float deltaTime) = 0;
 	bool IsActive() const;
 	virtual void Enable();
+	bool HasEnded(); // one-time check for the powerup timeout
 
 protected:
 	float ttl;
+	bool isActive;
 };
 
 class BottomWall : public Powerup
@@ -48,13 +49,18 @@ public:
 	~Shooter();
 	void Update(float deltaTime) override;
 	void Fire(float x);
-	void Enable() override;
 	void KillBullet(Mesh *bullet);
-	bool HasEnded(); // one-time check for the shooter timeout
 	std::unordered_map<Mesh *, glm::mat3> &GetBulletMeshes();
 
 private:
 	std::unordered_map<Mesh *, glm::mat3> activeBullets;
 	std::stack<Mesh *> recycledBullets;
-	bool isActive;
+};
+
+class FatBall : public Powerup
+{
+public:
+	FatBall();
+	~FatBall();
+	void Update(float deltaTime) override;
 };
