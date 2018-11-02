@@ -11,7 +11,8 @@ public:
 	Mesh *mesh;
 	bool isAttached; // checks if ball is attached to the paddle
 
-	const float radius = 9;
+	static constexpr float yPosAttached = 45;
+	const float radius = 10;
 	float vx, vy; // the ball's velocity
 
 	Ball(float initialX, float initialY);

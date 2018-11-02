@@ -7,7 +7,8 @@
 enum PowerupType
 {
 	BOTTOM_WALL,
-	SHOOTER
+	SHOOTER,
+	FAT_BALL
 };
 
 class Powerup
@@ -37,7 +38,7 @@ public:
 
 private:
 	Mesh *mesh;
-	glm::mat3x3 transformMatrix;
+	glm::mat3 transformMatrix;
 };
 
 class Shooter : public Powerup
@@ -50,10 +51,10 @@ public:
 	void Enable() override;
 	void KillBullet(Mesh *bullet);
 	bool HasEnded(); // one-time check for the shooter timeout
-	std::unordered_map<Mesh *, glm::mat3x3> &GetBulletMeshes();
+	std::unordered_map<Mesh *, glm::mat3> &GetBulletMeshes();
 
 private:
-	std::unordered_map<Mesh *, glm::mat3x3> activeBullets;
+	std::unordered_map<Mesh *, glm::mat3> activeBullets;
 	std::stack<Mesh *> recycledBullets;
 	bool isActive;
 };

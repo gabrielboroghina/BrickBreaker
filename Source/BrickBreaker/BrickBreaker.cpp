@@ -31,7 +31,7 @@ void BrickBreaker::Init()
 	for (int i = 0; i < lives; i++)
 		live[i] = CreateHeart();
 
-	ball = new Object2D::Ball(viewportSize.x / 2.0f, 45.0f);
+	ball = new Object2D::Ball(viewportSize.x / 2.0f, ball->yPosAttached);
 	paddle = new Object2D::Paddle();
 	walls = new Walls(viewportSize.x, viewportSize.y);
 	bricks = new Bricks(10, 10, viewportSize);
@@ -59,13 +59,13 @@ void BrickBreaker::HandleBrickCollisions(float xBall, float yBall)
 
 	for (int i = 0; i < bricks->numBrickLines; i++)
 		for (int j = 0; j < bricks->numBrickCols; j++) {
+			// compute brick index from brick position
 			int brickIndex = i * bricks->numBrickCols + j;
 			if (bricks->brick.count(brickIndex) && !bricks->WasBlasted(brickIndex)) {
 
-				// compute brick iterator in bricks vector
+				bool collisionDetected = false;
 				std::tie(xMin, xMax, yMin, yMax) = bricks->GetBrickBounds(i, j);
 
-				bool collisionDetected = false;
 				// vertical collision
 				if (xBall + collisionDist >= xMin && xBall - collisionDist <= xMax) {
 					if ((yBall >= yMax && yBall - yMax <= collisionDist && ball->vy < 0) || // collision from top
@@ -86,23 +86,24 @@ void BrickBreaker::HandleBrickCollisions(float xBall, float yBall)
 					}
 				}
 
-				// bullets (shooter)
+				// bullet - brick collision (shooter powerup)
 				Shooter *shooter = static_cast<Shooter *>(PowerupManager::GetPowerup(SHOOTER));
 				if (shooter)
 					for (auto it = shooter->GetBulletMeshes().begin(); it != shooter->GetBulletMeshes().end();) {
-						glm::vec3 bulletPos = it->second * glm::vec3(0, 0, 1);
+						glm::vec3 bulletPos = it->second * glm::vec3(0, paddle->yTop, 1); // bullet's center
 						if (bulletPos.x >= xMin && bulletPos.x <= xMax && bulletPos.y >= yMin && bulletPos.y <= yMax) {
 							bricks->Blast(brickIndex); // don't spawn from bullet-destroyed bricks
 							auto auxIt = it;
 							++it;
 							shooter->KillBullet(auxIt->first);
+							break;
 						}
 						else ++it;
 					}
 
 				if (collisionDetected) {
 					bricks->Blast(brickIndex);
-					powerupsManager->MaySpawn((xMin + xMax) / 2, (yMin + yMax) / 2);
+					powerupsManager->MaySpawn((xMin + xMax) / 2, (yMin + yMax) / 2); // allow powerup spawning
 				}
 			}
 		}
@@ -129,14 +130,15 @@ void BrickBreaker::HandlePowerupsCollisions(float xBall, float yBall)
 	}
 
 	// check active powerups
-
-	// bottom wall
-	if (powerupsManager->IsPowerupActive(BOTTOM_WALL) && yBall - BottomWall::yTop <= collisionDist)
+	// * bottom wall
+	if (powerupsManager->IsPowerupActive(BOTTOM_WALL) &&
+		yBall - BottomWall::yTop <= collisionDist && yBall >= BottomWall::yTop)
 		ball->ReflectY();
 }
 
 void BrickBreaker::CheckCollisions()
 {
+	// compute coordinates of the ball's center
 	float xBall = ball->translateMatrix[2][0];
 	float yBall = ball->translateMatrix[2][1];
 
@@ -144,19 +146,19 @@ void BrickBreaker::CheckCollisions()
 	if ((xBall < 0 || yBall < 0 || xBall > viewportSize.x || yBall > viewportSize.y) && !ball->isAttached)
 		ResetWithLiveLost();
 
-	// collision with the paddle
+	// ball - paddle collisions
 	if (xBall >= paddle->xCenter - paddle->length / 2 && xBall <= paddle->xCenter + paddle->length / 2 &&
 		yBall - paddle->yTop <= collisionDist && ball->vy <= 0)
 		ball->ReflectAngled((xBall - paddle->xCenter) / (paddle->length / 2));
 
-	// collision with a wall
+	// ball - wall collisions
 	float yTopBound = viewportSize.y - walls->wallWidth;
 	float xLeftBound = walls->wallWidth;
 	float xRightBound = viewportSize.x - walls->wallWidth;
 
 	if ((xBall - xLeftBound <= collisionDist || xRightBound - xBall <= collisionDist) && ball->vy > 0 &&
-		viewportSize.y - walls->verticalHeight - yBall <= collisionDist && yBall < viewportSize.y - walls->
-		verticalHeight)
+		viewportSize.y - walls->verticalHeight - yBall <= collisionDist &&
+		yBall < viewportSize.y - walls->verticalHeight)
 		ball->ReflectY();
 
 	if (yTopBound - yBall <= collisionDist && ball->vy > 0)
@@ -167,10 +169,10 @@ void BrickBreaker::CheckCollisions()
 		viewportSize.y - walls->verticalHeight <= yBall + collisionDist)
 		ball->ReflectX();
 
-	// collision with a brick
+	// ball - brick or bullet - brick collisions
 	HandleBrickCollisions(xBall, yBall);
 
-	// collision between a powerup ticket and the paddle or between the ball and a powerup ticket
+	// powerup ticket - paddle or ball - powerup ticket collisions
 	HandlePowerupsCollisions(xBall, yBall);
 }
 
@@ -208,8 +210,7 @@ void BrickBreaker::RenderLives()
 
 void BrickBreaker::Update(float deltaTimeSeconds)
 {
-	if (isGameOver)
-		return;
+	if (isGameOver) return;
 
 	CheckCollisions();
 
@@ -219,8 +220,8 @@ void BrickBreaker::Update(float deltaTimeSeconds)
 	RenderMesh2D(walls->meshLeft, colorShader,
 	             Translate(walls->wallWidth / 2, viewportSize.y - walls->verticalHeight / 2));
 
-	RenderMesh2D(walls->meshRight, colorShader, Translate(walls->topWallWidth - walls->wallWidth / 2,
-	                                                      viewportSize.y - walls->verticalHeight / 2));
+	RenderMesh2D(walls->meshRight, colorShader,
+	             Translate(walls->topWallWidth - walls->wallWidth / 2, viewportSize.y - walls->verticalHeight / 2));
 
 	RenderMesh2D(walls->meshTop, colorShader,
 	             Translate(walls->topWallWidth / 2.0f, viewportSize.y - walls->wallWidth / 2));
@@ -229,7 +230,7 @@ void BrickBreaker::Update(float deltaTimeSeconds)
 	paddle->CenterAtXPos(cursorXPos);
 	RenderMesh2D(paddle->mesh, colorShader, Translate(paddle->xCenter, paddle->yCenter));
 
-	ball->Update(deltaTimeSeconds, cursorXPos, 45.0f);
+	ball->Update(deltaTimeSeconds, cursorXPos, ball->yPosAttached);
 	RenderMesh2D(ball->mesh, colorShader, ball->GetTransformMatrix());
 
 	RenderLives();
