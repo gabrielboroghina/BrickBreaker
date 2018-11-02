@@ -7,7 +7,7 @@
 #include "Bricks.h"
 #include "PowerupManager.h"
 
-using namespace Object2D;
+using namespace Object;
 
 class BrickBreaker : public SimpleScene
 {
@@ -18,11 +18,11 @@ public:
 	void Init() override;
 
 private:
-	Ball *ball;
-	Paddle *paddle;
-	Walls *walls;
+	Object::Ball *ball;
+	Object::Paddle *paddle;
+	Object::Walls *walls;
+	Object::Bricks *bricks;
 	Mesh *live[3];
-	Bricks *bricks;
 	PowerupManager *powerupsManager;
 
 	bool isGameOver;

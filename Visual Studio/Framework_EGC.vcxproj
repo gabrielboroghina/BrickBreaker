@@ -23,7 +23,7 @@
     <ClCompile Include="..\Source\BrickBreaker\BasicMeshes.cpp" />
     <ClCompile Include="..\Source\BrickBreaker\BrickBreaker.cpp" />
     <ClCompile Include="..\Source\BrickBreaker\Bricks.cpp" />
-    <ClCompile Include="..\Source\BrickBreaker\Object.cpp" />
+    <ClCompile Include="..\Source\BrickBreaker\Object2D.cpp" />
     <ClCompile Include="..\Source\BrickBreaker\Paddle.cpp" />
     <ClCompile Include="..\Source\BrickBreaker\Powerups.cpp" />
     <ClCompile Include="..\Source\BrickBreaker\PowerupTicket.cpp" />
@@ -50,7 +50,7 @@
     <ClInclude Include="..\Source\BrickBreaker\BasicMeshes.h" />
     <ClInclude Include="..\Source\BrickBreaker\BrickBreaker.h" />
     <ClInclude Include="..\Source\BrickBreaker\Bricks.h" />
-    <ClInclude Include="..\Source\BrickBreaker\Object.h" />
+    <ClInclude Include="..\Source\BrickBreaker\Object2D.h" />
     <ClInclude Include="..\Source\BrickBreaker\Paddle.h" />
     <ClInclude Include="..\Source\BrickBreaker\Powerups.h" />
     <ClInclude Include="..\Source\BrickBreaker\PowerupTicket.h" />

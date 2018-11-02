@@ -3,7 +3,7 @@
 #include "BasicMeshes.h"
 #include "Transform2D.h"
 
-namespace Object2D
+namespace Object
 {
 Ball::Ball(float initialX, float yBottom) : isAttached(true)
 {

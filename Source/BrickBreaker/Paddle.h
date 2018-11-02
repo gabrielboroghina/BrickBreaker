@@ -2,7 +2,7 @@
 
 #include "Core/GPU/Mesh.h"
 
-namespace Object2D
+namespace Object
 {
 class Paddle
 {

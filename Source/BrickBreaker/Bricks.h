@@ -3,6 +3,8 @@
 #include "Core/GPU/Mesh.h"
 #include <unordered_map>
 
+namespace Object
+{
 class Bricks
 {
 public:
@@ -24,3 +26,4 @@ private:
 	float fSpaceBrick; // the proportion space_size / brick_size
 	std::unordered_map<int, float> scaleFactor;
 };
+}

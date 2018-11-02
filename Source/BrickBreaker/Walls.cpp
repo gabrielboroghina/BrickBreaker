@@ -2,6 +2,8 @@
 #include <glm/detail/type_vec3.hpp>
 #include "BasicMeshes.h"
 
+namespace Object
+{
 Walls::Walls(glm::vec2 viewportSize)
 {
 	verticalHeight = viewportSize.y * 0.85f;
@@ -16,4 +18,5 @@ Walls::~Walls()
 	delete meshLeft;
 	delete meshRight;
 	delete meshTop;
+}
 }

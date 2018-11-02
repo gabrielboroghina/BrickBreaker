@@ -3,7 +3,7 @@
 #include "Core/GPU/Mesh.h"
 #include "BasicMeshes.h"
 
-namespace Object2D
+namespace Object
 {
 Paddle::Paddle() : yTop(44), length(150), xCenter(0), yCenter(40)
 {

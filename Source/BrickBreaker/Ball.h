@@ -1,11 +1,11 @@
 #pragma once
 
 #include "Core/GPU/Mesh.h"
-#include "Object.h"
+#include "Object2D.h"
 
-namespace Object2D
+namespace Object
 {
-class Ball : public Object
+class Ball : public Object2D
 {
 public:
 	Mesh *mesh;

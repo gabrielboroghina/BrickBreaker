@@ -2,6 +2,8 @@
 
 #include "Core/GPU/Mesh.h"
 
+namespace Object
+{
 class Walls
 {
 public:
@@ -15,3 +17,4 @@ public:
 private:
 	const glm::vec3 color = glm::vec3(0.6f, 0.08f, 0);
 };
+}

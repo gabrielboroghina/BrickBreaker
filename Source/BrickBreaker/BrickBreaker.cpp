@@ -31,10 +31,10 @@ void BrickBreaker::Init()
 	for (int i = 0; i < lives; i++)
 		live[i] = CreateHeart();
 
-	paddle = new Object2D::Paddle();
-	ball = new Object2D::Ball(viewportSize.x / 2.0f, paddle->yTop);
-	walls = new Walls(viewportSize);
-	bricks = new Bricks(10, 10, viewportSize);
+	paddle = new Object::Paddle();
+	ball = new Object::Ball(viewportSize.x / 2.0f, paddle->yTop);
+	walls = new Object::Walls(viewportSize);
+	bricks = new Object::Bricks(10, 10, viewportSize);
 
 	powerupsManager = PowerupManager::GetInstance();
 	PowerupManager::SetViewportSize(viewportSize);

@@ -4,6 +4,8 @@
 #include "Transform2D.h"
 #include <tuple>
 
+namespace Object
+{
 Bricks::Bricks(int numBrickLines, int numBrickCols, glm::vec2 viewportSize) :
 	numBrickLines(numBrickLines), numBrickCols(numBrickCols), fSpaceBrick(0.4f)
 {
@@ -80,4 +82,5 @@ std::tuple<float, float, float, float> Bricks::GetBrickBounds(int i, int j)
 	glm::vec2 cornerMax = translateMatrix * glm::vec3(xMin + brickWidth, yMin + brickHeight, 1);
 
 	return std::make_tuple(cornerMin.x, cornerMax.x, cornerMin.y, cornerMax.y);
+}
 }
