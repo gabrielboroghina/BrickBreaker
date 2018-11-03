@@ -1,6 +1,7 @@
 Gabriel Boroghina, 333CB
 
-					              BRICK BREAKER
+                                  BRICK BREAKER
+
 
 	Implementarea temei este facuta in folderul Source/BrickBreaker, unde exista 
 clasele pentru obiectele din joc, precum si fisierul BrickBreaker.cpp, care contine
