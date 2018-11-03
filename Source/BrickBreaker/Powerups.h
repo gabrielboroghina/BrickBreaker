@@ -11,6 +11,9 @@ enum PowerupType
 	FAT_BALL
 };
 
+/**
+ * Abstract class containing the general behavior of a powerup
+ */
 class Powerup
 {
 public:
@@ -23,14 +26,14 @@ public:
 	bool HasEnded(); // one-time check for the powerup timeout
 
 protected:
-	float ttl;
-	bool isActive;
+	float ttl; // time to live
+	bool isActive; // used by the HasEnded method
 };
 
 class BottomWall : public Powerup
 {
 public:
-	static constexpr float yTop = 15, yPos = 10;
+	static constexpr float yTop = 15, yPos = 10; // yPos - center's y coordinate
 
 	BottomWall();
 	~BottomWall();
@@ -49,7 +52,7 @@ public:
 	~Shooter();
 	void Update(float deltaTime) override;
 	void Fire(float x);
-	void KillBullet(Mesh *bullet);
+	void KillBullet(Mesh *bullet); // recycle bullet
 	std::unordered_map<Mesh *, glm::mat3> &GetBulletMeshes();
 
 private:

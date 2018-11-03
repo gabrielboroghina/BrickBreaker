@@ -1,8 +1,5 @@
 #pragma once
 #include "Core/GPU/Mesh.h"
-#include <glm/detail/type_mat.hpp>
-#include <glm/detail/type_mat.hpp>
-#include <glm/detail/type_mat.hpp>
 
 Mesh *CreateMeshWithVertices(const char *name, const std::vector<VertexFormat> &vertices,
                              const std::vector<unsigned short> &indices);

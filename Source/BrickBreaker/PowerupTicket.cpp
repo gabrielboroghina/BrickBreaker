@@ -5,6 +5,7 @@
 #include <unordered_map>
 #include <tuple>
 
+// define tickets colors according to the powerup type
 std::unordered_map<PowerupType, glm::vec3> colorByType = {
 	{BOTTOM_WALL, glm::vec3(1, 1, 0)},
 	{SHOOTER, glm::vec3(1, 0, 0.1f)},
@@ -31,12 +32,13 @@ void PowerupTicket::Update(float deltaTime)
 	rotateMatrix *= Transform2D::Rotate(deltaTime * 2);
 
 	if ((translateMatrix * rotateMatrix * glm::vec3(0, 0, 1)).y <= 0) {
+		// ticket left the game area, so delete it
 		delete mesh;
 		mesh = nullptr;
 	}
 }
 
-glm::mat3x3 PowerupTicket::GetTransformMatrix() const
+glm::mat3 PowerupTicket::GetTransformMatrix() const
 {
 	return translateMatrix * rotateMatrix;
 }

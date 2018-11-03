@@ -71,8 +71,8 @@ Mesh *CreateCircle(float radius, glm::vec3 color, glm::vec3 marginColor)
 	std::vector<unsigned short> indices;
 
 	// Insert center
-	vertices.push_back(VertexFormat(glm::vec3(0, 0, 0), color));
-	vertices.push_back(VertexFormat(glm::vec3(radius, 0, 0), marginColor));
+	vertices.push_back(VertexFormat(glm::vec3(0, 0, 0), color)); // center
+	vertices.push_back(VertexFormat(glm::vec3(radius, 0, 0), marginColor)); // first point
 
 	for (int u = 1; u <= 360; u++) {
 		vertices.push_back(VertexFormat(glm::vec3(radius * cos(u), radius * sin(u), 0), marginColor));
@@ -90,18 +90,19 @@ Mesh *CreateHeart()
 	std::vector<VertexFormat> vertices;
 	glm::vec3 magenta = glm::vec3(0.93, 0.05, 0.33);
 	glm::vec3 gray = glm::vec3(0.64f, 0.23f, 0.36f); // gray
-	float radius = 3;
+	int radius = 3;
 
-	// bottom triangle
+	// reversed triangle
 	vertices.push_back(VertexFormat(glm::vec3(0, 0, 0), gray));
-	vertices.push_back(VertexFormat(glm::vec3(6, 9, 0), magenta));
-	vertices.push_back(VertexFormat(glm::vec3(-6, 9, 0), magenta));
+	vertices.push_back(VertexFormat(glm::vec3(2 * radius, 3 * radius, 0), magenta));
+	vertices.push_back(VertexFormat(glm::vec3(-2 * radius, 3 * radius, 0), magenta));
 	std::vector<unsigned short> indices = {0, 1, 2};
 
-	for (int x = -3; x <= 3; x += 6) {
+	// create 2 semicircles on the top of the triangle
+	for (int x = -radius; x <= radius; x += 2 * radius) {
 		unsigned short centerIndex = (unsigned short)vertices.size();
-		vertices.push_back(VertexFormat(glm::vec3(x, 9, 0), magenta)); // center
-		vertices.push_back(VertexFormat(glm::vec3(x + radius, 9, 0), magenta));
+		vertices.push_back(VertexFormat(glm::vec3(x, 3 * radius, 0), magenta)); // center
+		vertices.push_back(VertexFormat(glm::vec3(x + radius, 3 * radius, 0), magenta));
 
 		for (int u = 1; u <= 180; u++) {
 			vertices.push_back(VertexFormat(glm::vec3(x + radius * cos(u), 9 + radius * sin(u), 0), magenta));
@@ -119,8 +120,7 @@ Mesh *CreateRect(std::string name, glm::vec3 center, float height, float width, 
 {
 	height /= 2;
 	width /= 2;
-	std::vector<VertexFormat> vertices =
-	{
+	std::vector<VertexFormat> vertices = {
 		VertexFormat(center + glm::vec3(-width, -height, 0), color),
 		VertexFormat(center + glm::vec3(width, -height, 0), color),
 		VertexFormat(center + glm::vec3(width, height, 0), color),

@@ -18,6 +18,8 @@ public:
 	void Init() override;
 
 private:
+	const int bricksLines = 10, bricksCols = 10;
+
 	Object::Ball *ball;
 	Object::Paddle *paddle;
 	Object::Walls *walls;
@@ -26,13 +28,14 @@ private:
 	PowerupManager *powerupsManager;
 
 	bool isGameOver;
-	int lives;
+	int lives; // remaining lives
 	glm::vec2 viewportSize, windowScale;
 
 	void CheckCollisions();
 	void ResetWithLiveLost();
 	void ResetGame();
 	void RenderLives();
+	void RenderWalls();
 	void HandleBrickCollisions(float xBall, float yBall);
 	void HandlePowerupsCollisions(float xBall, float yBall);
 

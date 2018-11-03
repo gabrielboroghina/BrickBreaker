@@ -11,11 +11,12 @@ bool Powerup::IsActive() const { return ttl > 0; }
 void Powerup::Enable()
 {
 	isActive = true;
-	ttl = 4;
+	ttl = 4; // set time to live countdown
 }
 
 bool Powerup::HasEnded()
 {
+	// return true only the first time after a powerup expiration
 	if (isActive && ttl <= 0) {
 		isActive = false;
 		return true;
@@ -23,10 +24,12 @@ bool Powerup::HasEnded()
 	return false;
 }
 
+
 BottomWall::BottomWall()
 {
-	mesh = CreateRect("bottomWall", glm::vec3(PowerupManager::viewportSize.x / 2, yPos, 1),
-	                  yTop - yPos, PowerupManager::viewportSize.x, glm::vec3(0.06f, 0.58f, 0.8f), true);
+	float viewportWidth = PowerupManager::GetInstance()->viewportSize.x;
+	mesh = CreateRect("bottomWall", glm::vec3(viewportWidth / 2, yPos, 1), yTop - yPos, viewportWidth,
+	                  glm::vec3(0.06f, 0.58f, 0.8f), true);
 
 	transformMatrix = glm::mat3(1);
 }
@@ -39,20 +42,25 @@ BottomWall::~BottomWall()
 void BottomWall::Update(float deltaTime)
 {
 	ttl -= deltaTime;
-	if (ttl <= 0)
-		PowerupManager::activePowerupsMeshes.erase(PowerupManager::activePowerupsMeshes.find(mesh));
+
+	PowerupManager *powerupManager = PowerupManager::GetInstance();
+	if (ttl <= 0) // powerup expired
+		powerupManager->activePowerupsMeshes.erase(powerupManager->activePowerupsMeshes.find(mesh));
 }
 
 void BottomWall::Enable()
 {
 	Powerup::Enable();
-	PowerupManager::activePowerupsMeshes[mesh] = transformMatrix;
+	// insert bottom wall mesh into activePowerupsMeshes in order to be rendered in the Update method.
+	PowerupManager::GetInstance()->activePowerupsMeshes[mesh] = transformMatrix;
 }
+
 
 Shooter::Shooter() {}
 
 Shooter::~Shooter()
 {
+	// delete all bullets
 	while (!recycledBullets.empty())
 		delete recycledBullets.top();
 
@@ -65,16 +73,17 @@ void Shooter::Update(float deltaTime)
 	ttl -= deltaTime;
 
 	if (ttl <= 0) {
+		// recycle all bullets
 		for (auto &bullet : activeBullets)
 			recycledBullets.push(bullet.first);
 		activeBullets.clear();
 	}
 
 	for (auto &bullet : activeBullets)
-		bullet.second *= Transform2D::Translate(0, deltaTime * 600);
+		bullet.second *= Transform2D::Translate(0, deltaTime * 600); // shift upwards the bullet
 }
 
-std::unordered_map<Mesh *, glm::mat3x3> &Shooter::GetBulletMeshes()
+std::unordered_map<Mesh *, glm::mat3> &Shooter::GetBulletMeshes()
 {
 	return activeBullets;
 }
@@ -82,6 +91,7 @@ std::unordered_map<Mesh *, glm::mat3x3> &Shooter::GetBulletMeshes()
 void Shooter::Fire(float x)
 {
 	if (!recycledBullets.empty()) {
+		// use a recycled bullet
 		activeBullets[recycledBullets.top()] = Transform2D::Translate(x, 0);
 		recycledBullets.pop();
 	}
@@ -94,9 +104,11 @@ void Shooter::Fire(float x)
 
 void Shooter::KillBullet(Mesh *bullet)
 {
+	// recycle bullet
 	activeBullets.erase(bullet);
 	recycledBullets.push(bullet);
 }
+
 
 FatBall::FatBall() {}
 

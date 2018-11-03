@@ -13,15 +13,15 @@ public:
 
 	float radius;
 	const float stdRadius = 10;
-	float vx, vy; // the ball's velocity
+	float vx, vy; // the ball's velocity on Ox and Oy axis
 
 	Ball(float initialX, float initialY);
 	~Ball();
-	void Attach();
-	void Detach();
+	void Attach(); // attach the ball to the paddle
+	void Detach(); // detach the ball from the paddle
 	void Scale(float scaleX, float scaleY);
-	void Resize(float newRadius);
-	void Update(float deltaTime, float xCursor, float yPos);
+	void Resize(float resizeFactor);
+	void Update(float deltaTime, float xCursor, float yBottom);
 	void ReflectX();
 	void ReflectY();
 	void ReflectAngled(float cos);

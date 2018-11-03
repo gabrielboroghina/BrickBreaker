@@ -4,6 +4,10 @@
 
 namespace Object
 {
+/**
+ * The paddle is used by the user to keep the ball inside the game area
+ * and to redirect it on another direction.
+ */
 class Paddle
 {
 public:
@@ -12,7 +16,6 @@ public:
 
 	Paddle();
 	~Paddle();
-	void Render();
-	void CenterAtXPos(float x);
+	void CenterAtXPos(float x); // change the position of the paddle's center
 };
 }

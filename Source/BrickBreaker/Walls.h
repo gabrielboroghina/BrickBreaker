@@ -4,10 +4,13 @@
 
 namespace Object
 {
+/**
+ * Object containing the three walls placed on the left, right and top of the game area.
+ */
 class Walls
 {
 public:
-	static constexpr float wallWidth = 15;
+	static constexpr float thickness = 15;
 	float verticalHeight, topWallWidth;
 	Mesh *meshLeft, *meshRight, *meshTop;
 
@@ -15,6 +18,6 @@ public:
 	~Walls();
 
 private:
-	const glm::vec3 color = glm::vec3(0.6f, 0.08f, 0);
+	const glm::vec3 color = glm::vec3(0.48f, 0.08f, 0.23f);
 };
 }

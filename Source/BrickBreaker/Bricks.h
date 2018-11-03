@@ -5,6 +5,9 @@
 
 namespace Object
 {
+/**
+ * This object consists of a matrix of identical bricks.
+ */
 class Bricks
 {
 public:

@@ -9,15 +9,16 @@ namespace Object
 Bricks::Bricks(int numBrickLines, int numBrickCols, glm::vec2 viewportSize) :
 	numBrickLines(numBrickLines), numBrickCols(numBrickCols), fSpaceBrick(0.4f)
 {
-	const float fXSpace = 0.6f, fYSpace = 0.4f;
-
 	glm::vec3 color = glm::vec3(0.7f, 0.26f, 0.1f);
+
+	const float fXSpace = 0.6f, fYSpace = 0.4f; // percent of space occupied by the bricks matrix
 	float height = fYSpace * viewportSize.y;
 	float width = fXSpace * viewportSize.x;
 
 	brickHeight = height / ((fSpaceBrick + 1) * numBrickLines - fSpaceBrick);
 	brickWidth = width / ((fSpaceBrick + 1) * numBrickCols - fSpaceBrick);
 
+	// create the bricks
 	for (int i = 0; i < numBrickLines; i++)
 		for (int j = 0; j < numBrickCols; j++) {
 			float x = brickWidth * ((fSpaceBrick + 1) * j + 0.5f);
